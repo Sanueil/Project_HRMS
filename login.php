@@ -1,6 +1,5 @@
 <!DOCTYPE HTML>
 <html>
-<!--  -->
 
 <head>
     <title>HRMS</title>
