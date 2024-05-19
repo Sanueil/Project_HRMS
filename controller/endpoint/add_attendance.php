@@ -1,30 +1,48 @@
 <?php
-include("../conn/conn.php");
+session_start();
+include("../connect.php");
+
+$db = new Database();
+$conn = $db->connect();
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (isset($_POST['qr_code'])) {
         $qrCode = $_POST['qr_code'];
 
         // Lấy danh sách các mã QR hợp lệ từ cơ sở dữ liệu
-        $validQRCodesQuery = $conn->prepare("SELECT maQR FROM nhan_vien");
-        $validQRCodesQuery->execute();
-        $validQRCodesResult = $validQRCodesQuery->fetchAll(PDO::FETCH_COLUMN);
+        $validQRCodesQuery = "SELECT maQR FROM nhan_vien";
+        $validQRCodesResult = $db->query($validQRCodesQuery);
+
+        $validQRCodes = [];
+        while ($row = $validQRCodesResult->fetch_assoc()) {
+            $validQRCodes[] = $row['maQR'];
+        }
 
         // Kiểm tra xem mã QR được cung cấp có trong danh sách các mã QR hợp lệ không
-        if (!in_array($qrCode, $validQRCodesResult)) {
+        if (!in_array($qrCode, $validQRCodes)) {
+            // Lưu URL trước đó vào session
+            $_SESSION['previous_url'] = $_SERVER['HTTP_REFERER'];
+
+            // Tạo URL đầy đủ với ID được truyền vào
+            $role = isset($_SESSION['quanly_user']['username']) ? 'quanly' : (isset($_SESSION['nhanvien_user']['username']) ? 'nhanvien' : '');
+            $username = isset($_SESSION['quanly_user']['username']) ? $_SESSION['quanly_user']['username'] : (isset($_SESSION['nhanvien_user']['username']) ? $_SESSION['nhanvien_user']['username'] : '');
+            $url = "home.php?user=".$role."&username=".$username."&table=chamCongQR";
+
+            $redirectUrl = "../../user/".$role."/".$url;
             echo "<script>alert('Mã QR không hợp lệ!');</script>";
-            echo "<script>window.location.href = 'http://localhost/qr-code-attendance-system/index.php';</script>";
+            echo "<script>window.location.href = '$redirectUrl';</script>";
             exit(); // Dừng thực thi script
         }
 
         // Lấy mã nhân viên từ mã QR
-        $selectEmployeeId = $conn->prepare("SELECT idNhanVien FROM nhan_vien WHERE maQR = :qrCode");
-        $selectEmployeeId->bindParam(":qrCode", $qrCode, PDO::PARAM_STR);
-        $selectEmployeeId->execute();
-        $employeeIdResult = $selectEmployeeId->fetch();
+        $selectEmployeeIdQuery = "SELECT maNhanVien FROM nhan_vien WHERE maQR = ?";
+        $stmt = $conn->prepare($selectEmployeeIdQuery);
+        $stmt->bind_param("s", $qrCode);
+        $stmt->execute();
+        $employeeIdResult = $stmt->get_result()->fetch_assoc();
 
         if ($employeeIdResult) {
-            $employeeID = $employeeIdResult['idNhanVien'];
+            $employeeID = $employeeIdResult['maNhanVien'];
 
             // Thời gian hiện tại
             $current_time = time();
@@ -47,19 +65,29 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $attendanceStatus = "";
 
             // Kiểm tra xem nhân viên đã chấm công trong buổi đó chưa
-            $attendanceCheckQuery = $conn->prepare("SELECT * FROM cham_cong WHERE idNhanVien = :idNhanVien AND DATE(thoiGianChamCong) = CURDATE()");
-            $attendanceCheckQuery->bindParam(":idNhanVien", $employeeID, PDO::PARAM_STR);
-            $attendanceCheckQuery->execute();
-            $attendanceCheckResult = $attendanceCheckQuery->fetch();
+            $attendanceCheckQuery = "SELECT * FROM cham_cong WHERE maNhanVien = ? AND DATE(thoiGianChamCong) = CURDATE()";
+            $stmt = $conn->prepare($attendanceCheckQuery);
+            $stmt->bind_param("s", $employeeID);
+            $stmt->execute();
+            $attendanceCheckResult = $stmt->get_result()->fetch_assoc();
 
             if ($attendanceCheckResult) {
+                // Lưu URL trước đó vào session
+                $_SESSION['previous_url'] = $_SERVER['HTTP_REFERER'];
+
+                // Tạo URL đầy đủ với ID được truyền vào
+                $role = isset($_SESSION['quanly_user']['username']) ? 'quanly' : (isset($_SESSION['nhanvien_user']['username']) ? 'nhanvien' : '');
+                $username = isset($_SESSION['quanly_user']['username']) ? $_SESSION['quanly_user']['username'] : (isset($_SESSION['nhanvien_user']['username']) ? $_SESSION['nhanvien_user']['username'] : '');
+                $url = "home.php?user=".$role."&username=".$username."&table=chamCongQR";
+
+                $redirectUrl = "../../user/".$role."/".$url;
                 echo "<script>alert('Nhân viên đã chấm công trong buổi này!');</script>";
-                echo "<script>window.location.href = 'http://localhost/qr-code-attendance-system/index.php';</script>";
+                echo "<script>window.location.href = '$redirectUrl';</script>";
                 exit();
             }
 
             // Sửa đổi điều kiện để ghi nhận "Đúng giờ", "Tăng ca" hoặc "Vào trễ", "Quá giờ"
-            if ($current_time >= $onTimeStart && $current_time < $onTimeEnd) { 
+            if ($current_time >= $onTimeStart && $current_time < $onTimeEnd) {
                 $attendanceStatus = "Đúng giờ";
             } elseif ($current_time >= $overtimeStart && $current_time <= $overtimeEnd) {
                 $attendanceStatus = "Tan ca";
@@ -74,16 +102,24 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             }
 
             // Chấm công mới với thời gian vào và trạng thái
-            try {
-                $addAttendance = $conn->prepare("INSERT INTO cham_cong (idNhanVien, thoiGianChamCong, trangThai) VALUES (:idNhanVien, NOW(), :trangThai)");
-                $addAttendance->bindParam(":idNhanVien", $employeeID, PDO::PARAM_STR);
-                $addAttendance->bindParam(":trangThai", $attendanceStatus, PDO::PARAM_STR);
-                $addAttendance->execute();
+            $addAttendanceQuery = "INSERT INTO cham_cong (maNhanVien, thoiGianChamCong, trangThai) VALUES (?, NOW(), ?)";
+            $stmt = $conn->prepare($addAttendanceQuery);
+            $stmt->bind_param("ss", $employeeID, $attendanceStatus);
 
-                header("Location: http://localhost/qr-code-attendance-system/index.php");
+            if ($stmt->execute()) {
+                // Lưu URL trước đó vào session
+                $_SESSION['previous_url'] = $_SERVER['HTTP_REFERER'];
+
+                // Tạo URL đầy đủ với ID được truyền vào
+                $role = isset($_SESSION['quanly_user']['username']) ? 'quanly' : (isset($_SESSION['nhanvien_user']['username']) ? 'nhanvien' : '');
+                $username = isset($_SESSION['quanly_user']['username']) ? $_SESSION['quanly_user']['username'] : (isset($_SESSION['nhanvien_user']['username']) ? $_SESSION['nhanvien_user']['username'] : '');
+                $url = "home.php?user=".$role."&username=".$username."&table=chamCongQR";
+
+                $redirectUrl = "../../user/".$role."/".$url;
+                header("Location: $redirectUrl");
                 exit();
-            } catch (PDOException $e) {
-                echo "Error:" . $e->getMessage();
+            } else {
+                echo "Error:" . $db->getError();
             }
         } else {
             echo "Không tìm thấy nhân viên có mã QR tương ứng.";
@@ -93,5 +129,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         echo "Mã QR không được cung cấp.";
         exit();
     }
+
+    $stmt->close();
+    $db->close();
 }
 ?>

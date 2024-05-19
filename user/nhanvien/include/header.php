@@ -40,9 +40,6 @@ if ($result_anh) {
 ?>
 <!DOCTYPE html>
 <html lang="en">
-<style>
-
-</style>
 
 <head>
     <meta charset="utf-8">
@@ -51,25 +48,38 @@ if ($result_anh) {
     <title>Employee Dashboard</title>
     <link href="../../resorce/css/style.css?v=<?php echo time(); ?>" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.slim.min.js"></script>
+    <style>
+    /* Default avatar size */
+    .avatar img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        border-radius: 50%;
+    }
+
+    /* Container for the avatar */
+    .avatar {
+        width: 100px;
+        height: 100px;
+        border-radius: 50%;
+        overflow: hidden;
+        transition: width 0.3s, height 0.3s;
+    }
+
+    /* Smaller avatar size when sidebar is collapsed */
+    .mini-sidebar .avatar {
+        width: 50px;
+        height: 50px;
+    }
+    </style>
 </head>
-<style>
-.avatar {
-    width: 100px;
-    height: 100px;
-    border-radius: 50%;
-    overflow: hidden;
-}
-</style>
 
 <body>
     <div id="main-wrapper">
-
         <div class="nav-header">
-
             <div class="brand-logo">
                 <a>
                     <span class="brand-title">
-
                     </span>
                 </a>
             </div>
@@ -82,15 +92,14 @@ if ($result_anh) {
                     </div>
                 </div>
                 <div class="text-center">
-                    <h2 class="pt-3"> Quản lý nhân sự </h2>
+                    <h2 class="pt-3">HRMS-2N </h2>
                 </div>
-
             </div>
         </div>
         <div class="nk-sidebar">
             <div class="nk-nav-scroll">
-                <div class="avatar mt-4 " style="margin-left: auto; margin-right: auto;">
-                    <img src="<?php echo $logo_url ?>" alt="Avatar" class="avatar">
+                <div class="avatar mt-4" style="margin-left: auto; margin-right: auto;">
+                    <img src="<?php echo $logo_url ?>" alt="Avatar">
                 </div>
                 <ul class="metismenu" id="menu">
                     <br> <br>
@@ -132,6 +141,7 @@ if ($result_anh) {
             <div class="container">
                 <section class="content" id="main-content">
                     <div id="defaultContent" style="display: none;">
+                        <br>
                         <h3>QUẢN LÝ NHÂN SỰ: NHÂN VIÊN </h3>
                         <p>Chào mừng đến với Bảng điều kiển Nhân viên</p>
                         <!-- Hiển thị thông báo mới nhất -->
@@ -158,14 +168,14 @@ if ($result_anh) {
                         </ul>
                     </div>
                     <!-- Nội dung của từng danh mục sẽ được hiển thị ở đây -->
-                    <table border="1" class="data-table" id="chamCongQR" style="display: none;">
+                    <div border="1" class="data-table" id="chamCongQR" style="display: none;">
                         <div id="chamCongQR">
                             <?php
                             if (isset($_GET['table']) && $_GET['table'] === 'chamCongQR') {
                                 include_once 'chamCongQR.php'; // Bao gồm biểu mẫu 
                             } ?>
                         </div>
-                    </table>
+                    </div>
                     <table border="1" class="data-table" id="profile" style="display: none;">
                         <div id="profile">
                             <?php
@@ -186,4 +196,12 @@ if ($result_anh) {
             </div>
         </div>
 
-        <!-- row -->
+
+
+        <script>
+        $(document).ready(function() {
+            $('.toggle-icon').click(function() {
+                $('body').toggleClass('mini-sidebar');
+            });
+        });
+        </script>

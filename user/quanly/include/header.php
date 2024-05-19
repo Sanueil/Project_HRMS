@@ -42,7 +42,28 @@ if ($result_anh) {
 <!DOCTYPE html>
 <html lang="en">
 <style>
+/* Default avatar size */
+.avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 50%;
+}
 
+/* Container for the avatar */
+.avatar {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    overflow: hidden;
+    transition: width 0.3s, height 0.3s;
+}
+
+/* Smaller avatar size when sidebar is collapsed */
+.mini-sidebar .avatar {
+    width: 50px;
+    height: 50px;
+}
 </style>
 
 <head>
@@ -192,14 +213,14 @@ if ($result_anh) {
                             } ?>
                         </div>
                     </table>
-                    <table border="1" class="data-table" id="chamCongQR" style="display: none;">
+                    <div border="1" class="data-table" id="chamCongQR" style="display: none;">
                         <div id="chamCongQR">
                             <?php
                             if (isset($_GET['table']) && $_GET['table'] === 'chamCongQR') {
                                 include_once 'chamCongQR.php'; // Bao gồm biểu mẫu 
                             } ?>
                         </div>
-                    </table>
+                    </div>
                     <table border="1" class="data-table" id="pheDuyet" style="display: none;">
                         <div id="pheDuyet">
                             <?php
@@ -253,4 +274,11 @@ if ($result_anh) {
             </div>
         </div>
 
-        <!-- row -->
+
+        <script>
+        $(document).ready(function() {
+            $('.toggle-icon').click(function() {
+                $('body').toggleClass('mini-sidebar');
+            });
+        });
+        </script>
