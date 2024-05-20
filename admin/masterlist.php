@@ -21,152 +21,139 @@
         font-family: 'Poppins', sans-serif;
     }
 
+
     body {
-        background: linear-gradient(to bottom, rgba(255, 255, 255, 0.15) 0%, rgba(0, 0, 0, 0.15) 100%), radial-gradient(at top center, rgba(255, 255, 255, 0.40) 0%, rgba(0, 0, 0, 0.40) 120%) #989898;
-        background-blend-mode: multiply, multiply;
+        background: linear-gradient(to bottom, rgba(255, 255, 255, 0.15), rgba(0, 0, 0, 0.15)),
+            radial-gradient(at top center, rgba(255, 255, 255, 0.40), rgba(0, 0, 0, 0.40)) #989898;
+        background-blend-mode: multiply;
         background-attachment: fixed;
         background-repeat: no-repeat;
-        background-size: cover;
-    }
-
-    .main {
+        /* background-size: cover;
         display: flex;
         justify-content: center;
         align-items: center;
-        height: 91.5vh;
+        height: 100vh; */
     }
 
-    .employee-container {
-        height: 90%;
+    /* .employee-container {
         width: 90%;
         border-radius: 20px;
         padding: 40px;
         background-color: rgba(255, 255, 255, 0.8);
-    }
-
-    .employee-container>div {
         box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
-        border-radius: 10px;
-        padding: 30px;
-        height: 100%;
-    }
+    } */
 
     .title {
         display: flex;
         justify-content: space-between;
         align-items: center;
+        margin-bottom: 20px;
     }
 
-    table.dataTable thead>tr>th.sorting,
-    table.dataTable thead>tr>th.sorting_asc,
-    table.dataTable thead>tr>th.sorting_desc,
-    table.dataTable thead>tr>th.sorting_asc_disabled,
-    table.dataTable thead>tr>th.sorting_desc_disabled,
-    table.dataTable thead>tr>td.sorting,
-    table.dataTable thead>tr>td.sorting_asc,
-    table.dataTable thead>tr>td.sorting_desc,
-    table.dataTable thead>tr>td.sorting_asc_disabled,
-    table.dataTable thead>tr>td.sorting_desc_disabled {
+    .action-button {
+        display: flex;
+        gap: 5px;
+    }
+
+    .action-button img {
+        width: 16px;
+    }
+
+    table.dataTable thead th,
+    table.dataTable thead td {
         text-align: center;
     }
     </style>
 </head>
 
 <body>
-    <div class="main">
+    <div class="employee-container">
+        <div class="employee-list">
+            <div class="title">
+                <h4>Danh sách nhân viên</h4>
+                <button class="btn btn-dark" data-toggle="modal" data-target="#addEmployeeModal">Thêm nhân viên</button>
+            </div>
 
-        <div class="employee-container">
-            <div class="employee-list">
-                <div class="title">
-                    <h4>Danh sách nhân viên</h4>
-                    <button class="btn btn-dark" data-toggle="modal" data-target="#addEmployeeModal">Thêm nhân
-                        viên</button>
-                </div>
-                <hr>
-                <div class="table-container table-responsive">
-                    <table class="table text-center table-sm" id="employeeTable">
-                        <thead class="thead-dark">
-                            <tr>
-                                <th scope="col">ID</th>
-                                <th scope="col">Mã nhân viên</th>
-                                <th scope="col">Họ và tên</th>
-                                <th scope="col">Phòng ban</th>
-                                <th scope="col">Điều chỉnh</th>
-                            </tr>
-                        </thead>
-                        <tbody>
+            <div class="table-container table-responsive">
+                <table class="table text-center table-sm" id="employeeTable">
+                    <thead class="thead-dark">
+                        <tr>
+                            <th scope="col">ID</th>
+                            <th scope="col">Mã nhân viên</th>
+                            <th scope="col">Họ và tên</th>
+                            <th scope="col">Phòng ban</th>
+                            <th scope="col">Điều chỉnh</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <?php
+                        $employee = $db->prepare("SELECT nv.*, pb.tenPhongBan
+                            FROM nhan_vien nv
+                            LEFT JOIN nhan_vien_phong_ban nvpb ON nv.maNhanVien = nvpb.maNhanVien
+                            LEFT JOIN phong_ban pb ON nvpb.maPhongBan = pb.maPhongBan;");
+                        $employee->execute();
+                        $result = $employee->get_result();
+                        $count = 0;
+                        foreach ($result as $row) {
+                            $count++;
+                            $employeeID = $count;
+                            $employeeCode = $row["maNhanVien"];
+                            $employeeName = $row["hoTenNhanVien"];
+                            $employeePosition = $row["tenPhongBan"];
+                            $qrCode = $row["maQR"];
+                            ?>
+                        <tr>
+                            <th scope="row" id="employeeID-<?= $employeeID ?>"><?= $employeeID ?></th>
+                            <td id="employeeCode-<?= $employeeID ?>"><?= $employeeCode ?></td>
+                            <td id="employeeName-<?= $employeeID ?>"><?= $employeeName ?></td>
+                            <td id="employeePosition-<?= $employeeID ?>"><?= $employeePosition ?></td>
+                            <td>
+                                <div class="action-button">
+                                    <button class="btn btn-success btn-sm" data-toggle="modal"
+                                        data-target="#qrCodeModal<?= $employeeID ?>">
+                                        <img src="https://cdn-icons-png.flaticon.com/512/1341/1341632.png" alt="">
+                                    </button>
 
-                            <?php
-                            $employee = $db->prepare("SELECT nv.*, pb.tenPhongBan
-                                FROM nhan_vien nv
-                                LEFT JOIN nhan_vien_phong_ban nvpb ON nv.maNhanVien = nvpb.maNhanVien
-                                LEFT JOIN phong_ban pb ON nvpb.maPhongBan = pb.maPhongBan;
-                                -- WHERE nv.maQR IS NOT NULL AND nv.maQR != '';                            
-                                ");
-                            $employee->execute();
-                            $result = $employee->get_result();
-                            $count = 0;
-                            foreach ($result as $row) {
-                                $count++;
-                                $employeeID = $count;
-                                $employeeCode = $row["maNhanVien"];
-                                $employeeName = $row["hoTenNhanVien"];
-                                $employeePosition = $row["tenPhongBan"];
-                                $qrCode = $row["maQR"];
-                                ?>
-                                <tr>
-                                    <th scope="row" id="employeeID-<?= $employeeID ?>"><?= $employeeID ?></th>
-                                    <td id="employeeCode-<?= $employeeID ?>"><?= $employeeCode ?></td>
-                                    <td id="employeeName-<?= $employeeID ?>"><?= $employeeName ?></td>
-                                    <td id="employeePosition-<?= $employeeID ?>"><?= $employeePosition ?></td>
-                                    <td>
-                                        <div class="action-button">
-                                            <button class="btn btn-success btn-sm" data-toggle="modal"
-                                                data-target="#qrCodeModal<?= $employeeID ?>"><img
-                                                    src="https://cdn-icons-png.flaticon.com/512/1341/1341632.png" alt=""
-                                                    width="16"></button>
-
-                                            <!-- QR Modal -->
-                                            <div class="modal fade" id="qrCodeModal<?= $employeeID ?>" tabindex="-1"
-                                                aria-hidden="true">
-                                                <div class="modal-dialog">
-                                                    <div class="modal-content">
-                                                        <div class="modal-header">
-                                                            <h5 class="modal-title">Mã QR của <?= $employeeName ?></h5>
-                                                            <button type="button" class="close" data-dismiss="modal"
-                                                                aria-label="Close">
-                                                                <span aria-hidden="true">&times;</span>
-                                                            </button>
-                                                        </div>
-                                                        <div class="modal-body text-center">
-                                                            <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=<?= $qrCode ?>"
-                                                                alt="" width="300">
-                                                        </div>
-                                                        <div class="modal-footer">
-                                                            <button type="button" class="btn btn-secondary"
-                                                                data-dismiss="modal">Đóng</button>
-                                                        </div>
-                                                    </div>
+                                    <!-- QR Modal -->
+                                    <div class="modal fade" id="qrCodeModal<?= $employeeID ?>" tabindex="-1"
+                                        aria-hidden="true">
+                                        <div class="modal-dialog">
+                                            <div class="modal-content">
+                                                <div class="modal-header">
+                                                    <h5 class="modal-title">Mã QR của <?= $employeeName ?></h5>
+                                                    <button type="button" class="close" data-dismiss="modal"
+                                                        aria-label="Close">
+                                                        <span aria-hidden="true">&times;</span>
+                                                    </button>
+                                                </div>
+                                                <div class="modal-body text-center">
+                                                    <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=<?= $qrCode ?>"
+                                                        alt="" width="300">
+                                                </div>
+                                                <div class="modal-footer">
+                                                    <button type="button" class="btn btn-secondary"
+                                                        data-dismiss="modal">Đóng</button>
                                                 </div>
                                             </div>
-
-                                            <button class="btn btn-secondary btn-sm"
-                                                onclick="updateEmployee(<?= $employeeID ?>)">&#128393;</button>
-                                            <button class="btn btn-danger btn-sm"
-                                                onclick="deleteEmployee(<?= $employeeID ?>)">&#10006;</button>
                                         </div>
-                                    </td>
-                                </tr>
-                                <?php
-                            }
-                            ?>
-                        </tbody>
-                    </table>
-                </div>
+                                    </div>
+
+                                    <button class="btn btn-secondary btn-sm"
+                                        onclick="updateEmployee(<?= $employeeID ?>)">&#128393;</button>
+                                    <button class="btn btn-danger btn-sm"
+                                        onclick="deleteEmployee(<?= $employeeID ?>)">&#10006;</button>
+                                </div>
+                            </td>
+                        </tr>
+                        <?php
+                        }
+                        ?>
+                    </tbody>
+                </table>
             </div>
         </div>
-
     </div>
+
 
     <!-- Add Modal -->
     <div class="modal fade" id="addEmployeeModal" data-backdrop="static" data-keyboard="false" tabindex="-1"
@@ -311,7 +298,8 @@
             alert("Vui lòng nhập văn bản để tạo mã QR.");
             return;
         } else {
-            const apiUrl = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(text)}`;
+            const apiUrl =
+                `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(text)}`;
 
             qrImg.src = apiUrl;
             document.getElementById('employeeCode').style.pointerEvents = 'none';

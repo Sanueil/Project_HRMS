@@ -57,10 +57,10 @@
                     <label for="ngaySinh">Ngày Sinh:</label>
                     <input type="date" class="form-control" id="ngaySinh" name="ngaySinh" required>
                 </div>
-                <!-- <div class="form-group">
+                <div class="form-group">
                     <label for="hinhAnh">Hình Ảnh:</label>
                     <input type="file" class="form-control-file" id="hinhAnh" name="hinhAnh" accept="image/*" required>
-                </div> -->
+                </div>
                 <div class="form-group">
                     <input type="hidden" class="form-control" id="maQR" name="maQR">
                 </div>
@@ -82,14 +82,14 @@
         alert(message);
     }
     </script>
-    <?php 
-    if(isset($_SESSION['message']) && !empty($_SESSION['message'])): ?>
+    <?php
+    if (isset($_SESSION['message']) && !empty($_SESSION['message'])): ?>
     <script>
     showAlert('<?php echo $_SESSION['message']; ?>');
     </script>
-    <?php 
+    <?php
         unset($_SESSION['message']);
-    ?>
+        ?>
     <?php endif; ?>
 
     <!-- Bootstrap JS -->
@@ -108,13 +108,13 @@
         const chucVu = document.getElementById('chucVu').value;
         const ngaySinh = document.getElementById('ngaySinh').value;
 
-        const qrData = `Mã Nhân Viên: ${maNhanVien}\n
-                            Họ Tên: ${hoTenNhanVien}\n
-                            Địa Chỉ: ${diaChi}\n
-                            Số Điện Thoại: ${soDienThoai}\n
-                            Giới Tính: ${gioiTinh}\n
-                            Email: ${email}\n
-                            Chức Vụ: ${chucVu}\n
+        const qrData = `Mã Nhân Viên: ${maNhanVien} -
+                            Họ Tên: ${hoTenNhanVien} -
+                            Địa Chỉ: ${diaChi} -
+                            Số Điện Thoại: ${soDienThoai} -
+                            Giới Tính: ${gioiTinh} -
+                            Email: ${email} -
+                            Chức Vụ: ${chucVu} -
                             Ngày Sinh: ${ngaySinh}`;
 
         if (maNhanVien && hoTenNhanVien && diaChi && soDienThoai && gioiTinh && email && chucVu && ngaySinh) {

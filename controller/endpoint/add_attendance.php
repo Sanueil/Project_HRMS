@@ -1,6 +1,6 @@
 <?php
 session_start();
-include("../connect.php");
+include ("../connect.php");
 
 $db = new Database();
 $conn = $db->connect();
@@ -8,7 +8,30 @@ $conn = $db->connect();
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (isset($_POST['qr_code'])) {
         $qrCode = $_POST['qr_code'];
+        // Phân tách chuỗi thành mảng các phần tử dựa trên dấu "-"
+        $qrParts = explode("-", $qrCode);
 
+        // Mảng để lưu trữ thông tin được trích xuất
+        $info = [];
+
+        // Lặp qua các phần tử
+        foreach ($qrParts as $part) {
+            // Tìm vị trí của dấu ":" trong phần tử
+            $colonPosition = strpos($part, ':');
+
+            // Kiểm tra xem dấu ":" có tồn tại trong phần tử hay không
+            if ($colonPosition !== false) {
+                // Phân tách phần tử thành key và value dựa trên dấu ":"
+                $key = trim(substr($part, 0, $colonPosition));
+                $value = trim(substr($part, $colonPosition + 1));
+
+                // Lưu thông tin vào mảng kết quả
+                $info[$key] = $value;
+            }
+        }
+        $maNhanVien = $info['MÃ£ NhÃ¢n ViÃªn'];
+        $hoTen = $info['Há» TÃªn'];
+        $qrFilename = $maNhanVien . "_" . $hoTen . ".png";
         // Lấy danh sách các mã QR hợp lệ từ cơ sở dữ liệu
         $validQRCodesQuery = "SELECT maQR FROM nhan_vien";
         $validQRCodesResult = $db->query($validQRCodesQuery);
@@ -19,25 +42,25 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
 
         // Kiểm tra xem mã QR được cung cấp có trong danh sách các mã QR hợp lệ không
-        if (!in_array($qrCode, $validQRCodes)) {
+        if (!in_array($qrFilename, $validQRCodes)) {
             // Lưu URL trước đó vào session
             $_SESSION['previous_url'] = $_SERVER['HTTP_REFERER'];
 
             // Tạo URL đầy đủ với ID được truyền vào
             $role = isset($_SESSION['quanly_user']['username']) ? 'quanly' : (isset($_SESSION['nhanvien_user']['username']) ? 'nhanvien' : '');
             $username = isset($_SESSION['quanly_user']['username']) ? $_SESSION['quanly_user']['username'] : (isset($_SESSION['nhanvien_user']['username']) ? $_SESSION['nhanvien_user']['username'] : '');
-            $url = "home.php?user=".$role."&username=".$username."&table=chamCongQR";
+            $url = "home.php?user=" . $role . "&username=" . $username . "&table=chamCongQR";
 
-            $redirectUrl = "../../user/".$role."/".$url;
+            $redirectUrl = "../../user/" . $role . "/" . $url;
             echo "<script>alert('Mã QR không hợp lệ!');</script>";
-            echo "<script>window.location.href = '$redirectUrl';</script>";
+            // echo "<script>window.location.href = '$redirectUrl';</script>";
             exit(); // Dừng thực thi script
         }
 
         // Lấy mã nhân viên từ mã QR
         $selectEmployeeIdQuery = "SELECT maNhanVien FROM nhan_vien WHERE maQR = ?";
         $stmt = $conn->prepare($selectEmployeeIdQuery);
-        $stmt->bind_param("s", $qrCode);
+        $stmt->bind_param("s", $qrFilename);
         $stmt->execute();
         $employeeIdResult = $stmt->get_result()->fetch_assoc();
 
@@ -78,9 +101,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 // Tạo URL đầy đủ với ID được truyền vào
                 $role = isset($_SESSION['quanly_user']['username']) ? 'quanly' : (isset($_SESSION['nhanvien_user']['username']) ? 'nhanvien' : '');
                 $username = isset($_SESSION['quanly_user']['username']) ? $_SESSION['quanly_user']['username'] : (isset($_SESSION['nhanvien_user']['username']) ? $_SESSION['nhanvien_user']['username'] : '');
-                $url = "home.php?user=".$role."&username=".$username."&table=chamCongQR";
+                $url = "home.php?user=" . $role . "&username=" . $username . "&table=chamCongQR";
 
-                $redirectUrl = "../../user/".$role."/".$url;
+                $redirectUrl = "../../user/" . $role . "/" . $url;
                 echo "<script>alert('Nhân viên đã chấm công trong buổi này!');</script>";
                 echo "<script>window.location.href = '$redirectUrl';</script>";
                 exit();
@@ -113,9 +136,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 // Tạo URL đầy đủ với ID được truyền vào
                 $role = isset($_SESSION['quanly_user']['username']) ? 'quanly' : (isset($_SESSION['nhanvien_user']['username']) ? 'nhanvien' : '');
                 $username = isset($_SESSION['quanly_user']['username']) ? $_SESSION['quanly_user']['username'] : (isset($_SESSION['nhanvien_user']['username']) ? $_SESSION['nhanvien_user']['username'] : '');
-                $url = "home.php?user=".$role."&username=".$username."&table=chamCongQR";
+                $url = "home.php?user=" . $role . "&username=" . $username . "&table=chamCongQR";
 
-                $redirectUrl = "../../user/".$role."/".$url;
+                $redirectUrl = "../../user/" . $role . "/" . $url;
                 header("Location: $redirectUrl");
                 exit();
             } else {
