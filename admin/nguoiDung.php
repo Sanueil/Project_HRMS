@@ -1,28 +1,28 @@
 <?php
-    include_once('../controller/connect.php');
-    
-    // Khởi tạo một đối tượng Database
-    $dbs = new Database();
-    $db = $dbs->connect();
-    
-    // Số lượng bản ghi trên mỗi trang
-    $records_per_page = 10;
-    
-    // Lấy số trang hiện tại từ tham số truyền vào hoặc mặc định là trang đầu tiên
-    $current_page = isset($_GET['page']) ? $_GET['page'] : 1;
-    
-    // Tạo câu truy vấn SQL để lấy số lượng nhân viên
-    $count_query = "SELECT COUNT(*) AS total FROM nhan_vien";
-    $count_result = $dbs->query($count_query);
-    $row = mysqli_fetch_assoc($count_result);
-    $total_records = $row['total'];
-    
-    // Tính toán số trang
-    $total_pages = ceil($total_records / $records_per_page);
-    
-    // Tính toán offset để lấy bản ghi từ cơ sở dữ liệu dựa trên số trang hiện tại
-    $offset = ($current_page - 1) * $records_per_page;
-    ?>
+include_once ('../controller/connect.php');
+
+// Khởi tạo một đối tượng Database
+$dbs = new Database();
+$db = $dbs->connect();
+
+// Số lượng bản ghi trên mỗi trang
+$records_per_page = 10;
+
+// Lấy số trang hiện tại từ tham số truyền vào hoặc mặc định là trang đầu tiên
+$current_page = isset($_GET['page']) ? $_GET['page'] : 1;
+
+// Tạo câu truy vấn SQL để lấy số lượng nhân viên
+$count_query = "SELECT COUNT(*) AS total FROM nhan_vien";
+$count_result = $dbs->query($count_query);
+$row = mysqli_fetch_assoc($count_result);
+$total_records = $row['total'];
+
+// Tính toán số trang
+$total_pages = ceil($total_records / $records_per_page);
+
+// Tính toán offset để lấy bản ghi từ cơ sở dữ liệu dựa trên số trang hiện tại
+$offset = ($current_page - 1) * $records_per_page;
+?>
 <!DOCTYPE html>
 <html lang="en">
 
@@ -84,7 +84,7 @@
                         $search = $_GET['search'];
                         $search_query = " WHERE maNhanVien LIKE '%$search%' OR hoTenNhanVien LIKE '%$search%'";
                     }
-    
+
                     $sql = "
                     SELECT * FROM nhan_vien
                     $search_query
@@ -117,11 +117,11 @@
             <div class="pagination">
                 <ul class="pagination">
                     <?php
-            // Hiển thị các nút điều hướng
-            for ($i = 1; $i <= $total_pages; $i++) {
-                echo "<li class='page-item'><a class='page-link' href='home.php?user=admin&table=dsUsers&page=$i'>$i</a></li>";
-            }
-        ?>
+                    // Hiển thị các nút điều hướng
+                    for ($i = 1; $i <= $total_pages; $i++) {
+                        echo "<li class='page-item'><a class='page-link' href='home.php?user=admin&table=dsUsers&page=$i'>$i</a></li>";
+                    }
+                    ?>
                 </ul>
             </div>
         </div>
@@ -199,7 +199,7 @@
     }
 
     function confirmDelete(id) {
-        if (confirm("Bạn có chắc chắn muốn xóa phòng ban này không?")) {
+        if (confirm("Bạn có chắc chắn muốn xóa người dùng này không?")) {
             // Nếu người dùng chấp nhận, chuyển đến trang xử lý xóa và truyền ID
             window.location.href = "../controller/editNguoiDung.php?action=xoa&maNhanVien=" + id;
         }

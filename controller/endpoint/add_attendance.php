@@ -30,7 +30,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             }
         }
         $maNhanVien = $info['MÃ£ NhÃ¢n ViÃªn'];
-        $hoTen = $info['Há» TÃªn'];
+        $hoTen = str_replace(' ', '_', $info['Há» TÃªn']);
         $qrFilename = $maNhanVien . "_" . $hoTen . ".png";
         // Lấy danh sách các mã QR hợp lệ từ cơ sở dữ liệu
         $validQRCodesQuery = "SELECT maQR FROM nhan_vien";
