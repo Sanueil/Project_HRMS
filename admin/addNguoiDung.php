@@ -12,6 +12,14 @@
         padding: 2rem;
     }
     </style>
+    <script>
+    window.onload = function() {
+        <?php if (isset($_SESSION['message'])): ?>
+            alert("<?php echo $_SESSION['message'];
+            unset($_SESSION['message']); ?>");
+        <?php endif; ?>
+    };
+    </script>
 </head>
 
 <body>
@@ -84,10 +92,10 @@
     </script>
     <?php
     if (isset($_SESSION['message']) && !empty($_SESSION['message'])): ?>
-    <script>
-    showAlert('<?php echo $_SESSION['message']; ?>');
-    </script>
-    <?php
+        <script>
+        showAlert('<?php echo $_SESSION['message']; ?>');
+        </script>
+        <?php
         unset($_SESSION['message']);
         ?>
     <?php endif; ?>

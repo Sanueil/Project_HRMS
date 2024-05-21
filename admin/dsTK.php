@@ -29,8 +29,8 @@ function deleteRecord($id)
     // Thực thi truy vấn
     if ($db->query($sql) === TRUE) {
         // Hiển thị thông báo xóa thành công bằng hộp thoại JavaScript
-        echo "<script>alert('Xóa phòng ban thành công.');</script>";
-        echo "<script>window.location.href = '$url&table=users';</script>";
+        echo "<script>alert('Xóa tài khoản thành công.');</script>";
+        echo "<script>window.location.href = '$url'users';</script>";
     } else {
         // Hiển thị thông báo lỗi bằng hộp thoại JavaScript
         echo "<script>alert('Lỗi: " . $db->error . "');</script>";

@@ -36,10 +36,6 @@
                                             </div>
                                         </div>
                                     </div>
-                                    <div class="text-center mt-3"><a href="quetQR.php" target="_blank"
-                                            rel="noopener noreferrer">Chấm công</a>
-                                    </div>
-
                                 </div>
                             </div>
                         </div>

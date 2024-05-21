@@ -10,7 +10,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $qrCode = $_POST['qr_code'];
         // Phân tách chuỗi thành mảng các phần tử dựa trên dấu "-"
         $qrParts = explode("-", $qrCode);
-
         // Mảng để lưu trữ thông tin được trích xuất
         $info = [];
 
@@ -29,9 +28,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $info[$key] = $value;
             }
         }
+        print_r($info);
         $maNhanVien = $info['MÃ£ NhÃ¢n ViÃªn'];
         $hoTen = str_replace(' ', '_', $info['Há» TÃªn']);
         $qrFilename = $maNhanVien . "_" . $hoTen . ".png";
+        echo $qrFilename;
         // Lấy danh sách các mã QR hợp lệ từ cơ sở dữ liệu
         $validQRCodesQuery = "SELECT maQR FROM nhan_vien";
         $validQRCodesResult = $db->query($validQRCodesQuery);

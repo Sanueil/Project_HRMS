@@ -27,11 +27,13 @@ $query = "SELECT hinhAnh FROM nhan_vien WHERE maNhanVien = '$username'";
 $result_anh = mysqli_query($db, $query);
 
 if ($result_anh) {
-    if (mysqli_num_rows($result_anh) > 0) {
-        $row = mysqli_fetch_assoc($result_anh);
-        $logo_url = '../' . $row['hinhAnh'];
+    $row = mysqli_fetch_assoc($result_anh);
+    // Kiểm tra xem cột hinhAnh có giá trị không rỗng
+    if (!empty($row['hinhAnh'])) {
+        // Sử dụng ảnh từ cơ sở dữ liệu
+        $logo_url = '../../controller/' . $row['hinhAnh'];
     } else {
-        // Xử lý khi không có kết quả trả về, ví dụ: sử dụng ảnh mặc định
+        // Nếu không có giá trị, sử dụng ảnh mặc định
         $logo_url = "../../controller/uploads/thiên hà.jpg";
     }
 } else {

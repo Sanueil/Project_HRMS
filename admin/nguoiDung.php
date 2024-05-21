@@ -6,7 +6,7 @@ $dbs = new Database();
 $db = $dbs->connect();
 
 // Số lượng bản ghi trên mỗi trang
-$records_per_page = 10;
+$records_per_page = 5;
 
 // Lấy số trang hiện tại từ tham số truyền vào hoặc mặc định là trang đầu tiên
 $current_page = isset($_GET['page']) ? $_GET['page'] : 1;
@@ -22,6 +22,29 @@ $total_pages = ceil($total_records / $records_per_page);
 
 // Tính toán offset để lấy bản ghi từ cơ sở dữ liệu dựa trên số trang hiện tại
 $offset = ($current_page - 1) * $records_per_page;
+function deleteRecord($id)
+{
+    global $db, $url;
+    // Viết truy vấn SQL để xóa bản ghi dựa trên ID
+    $sql = "DELETE FROM nhan_vien WHERE maNhanVien = $id";
+
+    // Thực thi truy vấn
+    if ($db->query($sql) === TRUE) {
+        // Hiển thị thông báo xóa thành công bằng hộp thoại JavaScript
+        echo "<script>alert('Xóa nhân viên thành công.');</script>";
+        echo "<script>window.location.href = '$url'dsUsers';</script>";
+    } else {
+        // Hiển thị thông báo lỗi bằng hộp thoại JavaScript
+        echo "<script>alert('Lỗi: " . $db->error . "');</script>";
+    }
+}
+
+if (isset($_GET['maNhanVien'])) {
+    // Lấy ID từ tham số truyền vào
+    $id = $_GET['maNhanVien'];
+    // Gọi hàm xóa bản ghi
+    deleteRecord($id);
+}
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -106,7 +129,7 @@ $offset = ($current_page - 1) * $records_per_page;
                         echo "<td><button class='btn btn-primary' onclick='openUserInfoModal(" . $row['maNhanVien'] . ")'>Xem chi tiết</button></td>";
                         echo "<td>
                         <button class='btn btn-primary btn-sm' onclick='openModal(\"" . $row['maNhanVien'] . "\", \"" . $row['hoTenNhanVien'] . "\", \"" . $row['diaChi'] . "\", \"" . $row['soDienThoai'] . "\", \"" . $row['email'] . "\", \"" . $row['chucVu'] . "\", \"" . $row['ngaySinh'] . "\", \"" . $row['gioiTinh'] . "\")'>Sửa</button>
-                        <button class='btn btn-danger btn-sm' onclick='confirmDelete(" . $row['maNhanVien'] . ")'>Xóa</button>
+                        <button class='btn btn-danger btn-sm' onclick='confirmDelete(\"" . $row['maNhanVien'] . "\")'>Xóa</button>
                         </td>";
                         echo "</tr>";
                     }
@@ -200,8 +223,9 @@ $offset = ($current_page - 1) * $records_per_page;
 
     function confirmDelete(id) {
         if (confirm("Bạn có chắc chắn muốn xóa người dùng này không?")) {
-            // Nếu người dùng chấp nhận, chuyển đến trang xử lý xóa và truyền ID
-            window.location.href = "../controller/editNguoiDung.php?action=xoa&maNhanVien=" + id;
+            // Redirect or perform delete action here
+            var urlWithId = window.location.href + "&maNhanVien=" + id;
+            window.location.href = urlWithId;
         }
     }
 
@@ -235,6 +259,21 @@ $offset = ($current_page - 1) * $records_per_page;
         xhr.open("POST", "chiTietNguoiDung.php", true);
         xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
         xhr.send("maNhanVien=" + employeeId);
+    }
+
+    function getQRCode(maNhanVien) {
+        var xhr = new XMLHttpRequest();
+
+        xhr.onreadystatechange = function() {
+            if (xhr.readyState == 4 && xhr.status == 200) {
+                // Hiển thị thông tin mã QR của nhân viên trong modal
+                document.getElementById("qrCode").innerHTML = xhr.responseText;
+            }
+        };
+
+        xhr.open("POST", "getQRCode.php", true);
+        xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+        xhr.send("maNhanVien=" + maNhanVien);
     }
     </script>
     <div id="employeeDetailModal" class="modal">
