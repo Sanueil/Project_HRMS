@@ -135,53 +135,53 @@ $result = $db->query($query);
 // Duyệt qua từng dòng kết quả
 while ($row_edit = $result->fetch_assoc()) {
     ?>
-    <div id="editDepartmentModal_<?php echo $row_edit['maPhongBan']; ?>" class="modal fade" tabindex="-1" role="dialog"
-        aria-labelledby="editDepartmentModalLabel_<?php echo $row_edit['maPhongBan']; ?>" aria-hidden="true">
-        <div class="modal-dialog" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="editDepartmentModalLabel_<?php echo $row_edit['maPhongBan']; ?>">Sửa thông
-                        tin phòng ban</h5>
-                    <button type="button" class="close" data-dismiss="modal">
-                        <span>&times;</span>
-                    </button>
+<div id="editDepartmentModal_<?php echo $row_edit['maPhongBan']; ?>" class="modal fade" tabindex="-1" role="dialog"
+    aria-labelledby="editDepartmentModalLabel_<?php echo $row_edit['maPhongBan']; ?>" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="editDepartmentModalLabel_<?php echo $row_edit['maPhongBan']; ?>">Sửa thông
+                    tin phòng ban</h5>
+                <button type="button" class="close" data-dismiss="modal">
+                    <span>&times;</span>
+                </button>
+            </div>
+            <form class="modal-body" id="editDepartmentForm_<?php echo $row_edit['maPhongBan']; ?>" method="post"
+                action="../controller/editPhongBan.php">
+                <input type="hidden" id="department_id" name="department_id"
+                    value="<?php echo $row_edit['maPhongBan']; ?>">
+                <div class="form-group">
+                    <label for="tenPhongBan">Tên phòng ban:</label>
+                    <input type="text" class="form-control" id="tenPhongBan" name="tenPhongBan"
+                        value="<?php echo $row_edit['tenPhongBan']; ?>" required>
                 </div>
-                <form class="modal-body" id="editDepartmentForm_<?php echo $row_edit['maPhongBan']; ?>" method="post"
-                    action="../controller/editPhongBan.php">
-                    <input type="hidden" id="department_id" name="department_id"
-                        value="<?php echo $row_edit['maPhongBan']; ?>">
-                    <div class="form-group">
-                        <label for="tenPhongBan">Tên phòng ban:</label>
-                        <input type="text" class="form-control" id="tenPhongBan" name="tenPhongBan"
-                            value="<?php echo $row_edit['tenPhongBan']; ?>" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="moTa">Mô tả:</label>
-                        <textarea class="form-control" id="moTa" name="moTa"><?php echo $row_edit['moTa']; ?></textarea>
-                    </div>
-                    <div class="form-group">
-                        <label for="soDienThoai">Số điện thoại:</label>
-                        <input type="tel" class="form-control" id="soDienThoai" name="soDienThoai"
-                            value="<?php echo $row_edit['soDienThoai']; ?>">
-                    </div>
-                    <div class="form-group">
-                        <label for="email">Email:</label>
-                        <input type="email" class="form-control" id="email" name="email"
-                            value="<?php echo $row_edit['email']; ?>">
-                    </div>
-                    <input type="hidden" name="maNhanVien" value="<?php echo $username; ?>">
-                    <input type="hidden" name="ngayTao" value="<?php echo $row_edit['ngayTao']; ?>">
-                    <input type="hidden" name="ngayChinhSua" value="<?php echo date("Y-m-d H:i:s"); ?>">
-                </form>
-                <div class="modal-footer">
-                    <button type="submit" class="btn btn-primary"
-                        form="editDepartmentForm_<?php echo $row_edit['maPhongBan']; ?>" name="submit">Lưu</button>
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Đóng</button>
+                <div class="form-group">
+                    <label for="moTa">Mô tả:</label>
+                    <textarea class="form-control" id="moTa" name="moTa"><?php echo $row_edit['moTa']; ?></textarea>
                 </div>
+                <div class="form-group">
+                    <label for="soDienThoai">Số điện thoại:</label>
+                    <input type="tel" class="form-control" id="soDienThoai" name="soDienThoai"
+                        value="<?php echo $row_edit['soDienThoai']; ?>">
+                </div>
+                <div class="form-group">
+                    <label for="email">Email:</label>
+                    <input type="email" class="form-control" id="email" name="email"
+                        value="<?php echo $row_edit['email']; ?>">
+                </div>
+                <input type="hidden" name="maNhanVien" value="<?php echo $username; ?>">
+                <input type="hidden" name="ngayTao" value="<?php echo $row_edit['ngayTao']; ?>">
+                <input type="hidden" name="ngayChinhSua" value="<?php echo date("Y-m-d H:i:s"); ?>">
+            </form>
+            <div class="modal-footer">
+                <button type="submit" class="btn btn-primary"
+                    form="editDepartmentForm_<?php echo $row_edit['maPhongBan']; ?>" name="submit">Lưu</button>
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Đóng</button>
             </div>
         </div>
     </div>
-    <?php
+</div>
+<?php
 }
 ?>
 

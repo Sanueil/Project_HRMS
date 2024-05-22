@@ -228,7 +228,7 @@
             var notificationElement = document.createElement('div');
             notificationElement.classList.add('alert', 'alert-warning', 'text-center');
             notificationElement.innerHTML =
-                '<strong>Thông báo:</strong> Hiện không phải là thời gian để chấm công. Thời gian chấm công từ 8h00 - 17h10 và từ 18h00 - 23h10.';
+                '<strong>Thông báo:</strong> Hiện không phải là thời gian để chấm công.';
             scannerContainer.appendChild(notificationElement);
         }
     });

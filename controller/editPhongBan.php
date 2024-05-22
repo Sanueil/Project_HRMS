@@ -33,7 +33,7 @@ if(isset($_POST['submit'])) {
         $current_department['email'] != $new_department_email) {
         // Thực hiện truy vấn để cập nhật thông tin phòng ban
         $sql = "UPDATE phong_ban SET tenPhongBan = '$new_department_name', moTa = '$new_department_description'
-        , soDienThoai = '$new_department_phone', email = '$new_department_email' WHERE maPhongBan = $department_id";
+        , soDienThoai = '$new_department_phone', email = '$new_department_email', ngayChinhSua = NOW() WHERE maPhongBan = $department_id";
         $result = $dbs->query($sql);
         if ($result) {
             $updated = true; // Đánh dấu là đã cập nhật thành công

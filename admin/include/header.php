@@ -232,8 +232,8 @@ p {
                             <div class="right-section">
                                 <!-- Content for the first right section goes here -->
                                 <h3>Tổng nhân viên nghỉ việc</h3>
-                                <p><?php echo $row_departed_employees['departed_employees']; ?> nhân viên đã nghỉ việc
-                                </p>
+                                <!-- <p><?php echo $row_departed_employees['departed_employees']; ?> nhân viên đã nghỉ việc
+                                </p> -->
                             </div>
                         </div>
                     </div>
