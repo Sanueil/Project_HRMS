@@ -4,7 +4,7 @@
 $records_per_page = 4;
 
 // Lấy số trang hiện tại từ tham số truyền vào
-$current_page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
+$current_page = isset($_GET['page']) ? (int) $_GET['page'] : 1;
 if ($current_page < 1) {
     $current_page = 1;
 }
@@ -27,7 +27,7 @@ function deleteRecord($id)
     // Sử dụng prepared statement để ngăn chặn SQL Injection
     $stmt = $db->prepare("DELETE FROM phong_ban WHERE maPhongBan = ?");
     $stmt->bind_param("i", $id);
-    
+
     // Thực thi truy vấn
     if ($stmt->execute()) {
         // Hiển thị thông báo xóa thành công bằng hộp thoại JavaScript
@@ -43,7 +43,7 @@ function deleteRecord($id)
 
 if (isset($_GET['maPhongBan'])) {
     // Lấy ID từ tham số truyền vào
-    $id = (int)$_GET['maPhongBan'];
+    $id = (int) $_GET['maPhongBan'];
     // Gọi hàm xóa bản ghi
     deleteRecord($id);
 }
@@ -58,12 +58,36 @@ function confirmDelete(id) {
     }
 }
 
-function updateMaPhongBan() {
-    // Lấy giá trị của phòng ban được chọn
-    var selectedPhongBan = document.getElementById("users").value;
-    // Gán giá trị của phòng ban vào trường input ẩn
-    document.getElementById("maPhongBan").value = selectedPhongBan;
-    console.log("Mã phòng ban được chọn là: " + selectedPhongBan); // Thêm dòng này để kiểm tra giá trị
+function removeEmployee(maNhanVien, maPhongBan) {
+    if (confirm('Bạn có chắc chắn muốn xóa nhân viên này khỏi phòng ban không?')) {
+        $.ajax({
+            type: 'POST',
+            url: '../../controller/ds_nv_pb.php',
+            data: {
+                maNhanVien: maNhanVien,
+                maPhongBan: maPhongBan
+            },
+            success: function(response) {
+                reloadEmployeeList();
+                alert(response); // Hiển thị thông báo từ máy chủ (thông báo xóa thành công hoặc lỗi)
+            }
+        });
+    }
+}
+
+function reloadEmployeeList() {
+    var maPhongBan = $('#maPhongBan').val();
+    $.ajax({
+        type: 'POST',
+        url: 'phongBan.php',
+        data: {
+            get_department_id: maPhongBan
+        }, // Gửi mã phòng ban đến máy chủ
+        success: function(response) {
+            // Cập nhật lại nội dung của phần hiển thị danh sách nhân viên
+            $('#employee_list').html(response);
+        }
+    });
 }
 </script>
 <!DOCTYPE html>
@@ -121,7 +145,7 @@ function updateMaPhongBan() {
                             echo "<td>" . $count . "</td>";
                             echo "<td>" . htmlspecialchars($row['tenPhongBan']) . "</td>";
                             echo "<td>
-                                <button class='btn btn-primary btn-sm' data-toggle='modal' data-target='#addEmployeeModal'>Thêm</button>
+                                <button class='btn btn-primary btn-sm' data-toggle='modal' data-target='#addEmployeeModal' onclick='openAddEmployeeModal(" . $row['maPhongBan'] . ")'>Thêm</button>
                                 <button class='btn btn-info btn-sm' data-toggle='modal' data-target='#editDepartmentModal_" . $row['maPhongBan'] . "'>Sửa</button>
                                 <button class='btn btn-danger btn-sm' onclick='confirmDelete(" . $row['maPhongBan'] . ")'>Xóa</button>
                                 <button class='btn btn-secondary btn-sm' data-toggle='modal' data-target='#dsEmployeeModal' onclick='openDsEmployeeModal(" . $row['maPhongBan'] . ")'>Xem thêm</button>
@@ -213,13 +237,33 @@ function updateMaPhongBan() {
                         ?>
                     </select>
                 </div>
-                <button type="submit" class="btn btn-primary" name="submit">Thêm</button>
+                <button type=" submit" class="btn btn-primary" name="submit">Thêm</button>
                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Đóng</button>
             </form>
         </div>
     </div>
 </div>
 <!-- Danh sách phòng ban -->
+<script>
+function openAddEmployeeModal(maPhongBan) {
+    // Lấy modal
+    var modal = document.getElementById('addEmployeeModal');
+    // Lấy input chứa mã phòng ban
+    var inputMaPhongBan = modal.querySelector('#maPhongBan');
+    // Gán giá trị mã phòng ban vào input
+    inputMaPhongBan.value = maPhongBan;
+    // Hiển thị modal
+    $('#' + modal.id).modal('show');
+}
+
+function updateMaPhongBan() {
+    // Lấy giá trị của phòng ban được chọn
+    var selectedPhongBan = document.getElementById("employee_name").value;
+    // Gán giá trị của phòng ban vào trường input ẩn
+    document.getElementById("maPhongBan").value = selectedPhongBan;
+    console.log("Mã phòng ban được chọn là: " + selectedPhongBan); // Thêm dòng này để kiểm tra giá trị
+}
+</script>
 <?php
 $sql = "SELECT * FROM phong_ban";
 $result = $db->query($sql);

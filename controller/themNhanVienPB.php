@@ -1,6 +1,6 @@
 <?php
 session_start();
-include_once('connect.php');
+include_once ('connect.php');
 
 // Sử dụng lớp Database để kết nối đến cơ sở dữ liệu
 $dbs = new Database();
@@ -23,16 +23,11 @@ if (isset($_POST['submit'])) {
         // Lấy dữ liệu từ form
         $maPhongBan = $_POST['maPhongBan'];
         $maNhanVien = $_POST['users'];
-
-        // Kiểm tra giá trị của biến $maPhongBan và $maNhanVien
-        var_dump($maPhongBan, $maNhanVien);
-
         // Kiểm tra xem phòng ban có tồn tại hay không
         $check_phongban_sql = $db->prepare("SELECT * FROM phong_ban WHERE maPhongBan = ?");
         $check_phongban_sql->bind_param("i", $maPhongBan);
         $check_phongban_sql->execute();
         $check_phongban_result = $check_phongban_sql->get_result();
-        var_dump($check_phongban_result->num_rows); // Kiểm tra số hàng trả về
         if ($check_phongban_result->num_rows == 0) {
             $message = "Phòng ban không tồn tại!";
             echo "<script>alert('$message'); window.history.back();</script>";
@@ -44,7 +39,6 @@ if (isset($_POST['submit'])) {
         $check_nhanvien_sql->bind_param("i", $maNhanVien);
         $check_nhanvien_sql->execute();
         $check_nhanvien_result = $check_nhanvien_sql->get_result();
-        var_dump($check_nhanvien_result->num_rows); // Kiểm tra số hàng trả về
         if ($check_nhanvien_result->num_rows == 0) {
             $message = "Nhân viên không tồn tại!";
             echo "<script>alert('$message'); window.history.back();</script>";
@@ -74,7 +68,7 @@ if (isset($_POST['submit'])) {
         $message = "Vui lòng nhập đầy đủ thông tin!";
     }
 
-    $username = $_SESSION['user']['username'];
+    $username = $_SESSION['quanly_user']['username'];
     // Thiết lập URL chuyển hướng
     $redirect_url = "../user/quanly/home.php?user=quanly&username=$username&table=department";
     // Hiển thị thông báo và chuyển hướng sau khi thêm phòng ban
