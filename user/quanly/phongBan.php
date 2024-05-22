@@ -1,11 +1,15 @@
 <?php
+
 // Số lượng bản ghi trên mỗi trang
 $records_per_page = 4;
 
 // Lấy số trang hiện tại từ tham số truyền vào
-$current_page = isset($_GET['page']) ? $_GET['page'] : 1;
+$current_page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
+if ($current_page < 1) {
+    $current_page = 1;
+}
 
-// Truy vấn cơ sở dữ liệu để lấy số lượng 
+// Truy vấn cơ sở dữ liệu để lấy số lượng bản ghi
 $count_query = "SELECT COUNT(*) AS total FROM phong_ban";
 $count_result = $dbs->query($count_query);
 $row = mysqli_fetch_assoc($count_result);
@@ -16,26 +20,30 @@ $total_pages = ceil($total_records / $records_per_page);
 
 // Tính toán offset để lấy bản ghi từ cơ sở dữ liệu dựa trên số trang hiện tại
 $offset = ($current_page - 1) * $records_per_page;
+
 function deleteRecord($id)
 {
     global $db, $url;
-    // Viết truy vấn SQL để xóa bản ghi dựa trên ID
-    $sql = "DELETE FROM phong_ban WHERE maPhongBan = $id";
-
+    // Sử dụng prepared statement để ngăn chặn SQL Injection
+    $stmt = $db->prepare("DELETE FROM phong_ban WHERE maPhongBan = ?");
+    $stmt->bind_param("i", $id);
+    
     // Thực thi truy vấn
-    if ($db->query($sql) === TRUE) {
+    if ($stmt->execute()) {
         // Hiển thị thông báo xóa thành công bằng hộp thoại JavaScript
         echo "<script>alert('Xóa phòng ban thành công.');</script>";
         echo "<script>window.location.href = '$url&table=department';</script>";
     } else {
         // Hiển thị thông báo lỗi bằng hộp thoại JavaScript
-        echo "<script>alert('Lỗi: " . $db->error . "');</script>";
+        echo "<script>alert('Lỗi: " . $stmt->error . "');</script>";
     }
+
+    $stmt->close();
 }
 
 if (isset($_GET['maPhongBan'])) {
     // Lấy ID từ tham số truyền vào
-    $id = $_GET['maPhongBan'];
+    $id = (int)$_GET['maPhongBan'];
     // Gọi hàm xóa bản ghi
     deleteRecord($id);
 }
@@ -45,7 +53,7 @@ if (isset($_GET['maPhongBan'])) {
 function confirmDelete(id) {
     if (confirm("Bạn có chắc chắn muốn xóa phòng ban này không?")) {
         // Redirect or perform delete action here
-        var urlWithId = window.location.href + "&maPhongBan=" + id;
+        var urlWithId = window.location.href.split('?')[0] + "?maPhongBan=" + id;
         window.location.href = urlWithId;
     }
 }
@@ -99,27 +107,29 @@ function updateMaPhongBan() {
                     <?php
                     $search_query = "";
                     if (isset($_GET['search'])) {
-                        $search = $_GET['search'];
+                        $search = $db->real_escape_string($_GET['search']);
                         $search_query = " WHERE tenPhongBan LIKE '%$search%'";
                     }
                     // Truy vấn cơ sở dữ liệu để lấy danh sách phòng ban
-                    $sql = "SELECT * FROM phong_ban $search_query";
-                    $result = $dbs->paginate($sql, $records_per_page, $current_page);
-                    $count = ($current_page - 1) * $records_per_page;
-                    while ($row = $result->fetch_assoc()) {
-                        $count++;
-                        echo "<tr>";
-                        echo "<td>" . $count . "</td>";
-                        echo "<td>" . $row['tenPhongBan'] . "</td>";
-                        echo "<td>
-                            <button class='btn btn-primary btn-sm' data-toggle='modal' data-target='#addEmployeeModal'>Thêm</button>
-                            <button class='btn btn-info btn-sm' data-toggle='modal' data-target='#editDepartmentModal_" . $row['maPhongBan'] . "'>Sửa</button>
-                            <button class='btn btn-danger btn-sm' onclick='confirmDelete(" . $row['maPhongBan'] . ")'>Xóa</button>
-                            <button class='btn btn-secondary btn-sm' data-toggle='modal' data-target='#dsEmployeeModal' onclick='openDsEmployeeModal(" . $row['maPhongBan'] . ")'>Xem
-                    thêm</button>
-
-                    </td>";
-                        echo "</tr>";
+                    $sql = "SELECT * FROM phong_ban $search_query LIMIT $records_per_page OFFSET $offset";
+                    $result = $db->query($sql);
+                    if ($result && $result->num_rows > 0) {
+                        $count = ($current_page - 1) * $records_per_page;
+                        while ($row = $result->fetch_assoc()) {
+                            $count++;
+                            echo "<tr>";
+                            echo "<td>" . $count . "</td>";
+                            echo "<td>" . htmlspecialchars($row['tenPhongBan']) . "</td>";
+                            echo "<td>
+                                <button class='btn btn-primary btn-sm' data-toggle='modal' data-target='#addEmployeeModal'>Thêm</button>
+                                <button class='btn btn-info btn-sm' data-toggle='modal' data-target='#editDepartmentModal_" . $row['maPhongBan'] . "'>Sửa</button>
+                                <button class='btn btn-danger btn-sm' onclick='confirmDelete(" . $row['maPhongBan'] . ")'>Xóa</button>
+                                <button class='btn btn-secondary btn-sm' data-toggle='modal' data-target='#dsEmployeeModal' onclick='openDsEmployeeModal(" . $row['maPhongBan'] . ")'>Xem thêm</button>
+                                </td>";
+                            echo "</tr>";
+                        }
+                    } else {
+                        echo "<tr><td colspan='3'>Không có phòng ban nào.</td></tr>";
                     }
                     ?>
                 </tbody>
@@ -129,7 +139,7 @@ function updateMaPhongBan() {
                 <ul class="pagination justify-content-center">
                     <?php
                     for ($page = 1; $page <= $total_pages; $page++) {
-                        echo '<li class="page-item"><a class="page-link" href="home.php?user=quanly&username=2222&table=department&page=' . $page . '">' . $page . '</a></li>';
+                        echo '<li class="page-item"><a class="page-link" href="home.php?user=' . $_GET['user'] . '&table=' . $_GET['table'] . '&page=' . $page . '">' . $page . '</a></li>';
                     }
                     ?>
                 </ul>
@@ -191,14 +201,8 @@ function updateMaPhongBan() {
                     <label for="employee_name">Chọn nhân viên:</label>
                     <select class="form-control" id="employee_name" name="users" onchange="updateMaPhongBan()">
                         <?php
-                        $sql = "SELECT maNhanVien, hoTenNhanVien 
-                                FROM nhan_vien 
-                                WHERE maNhanVien NOT IN (SELECT maNhanVien FROM nhan_vien_phong_ban)
-                                AND chucVu = 'Nhân viên';";
-
+                        $sql = "SELECT maNhanVien, hoTenNhanVien FROM nhan_vien WHERE maNhanVien NOT IN (SELECT maNhanVien FROM nhan_vien_phong_ban) AND chucVu = 'Nhân viên'";
                         $result = $db->query($sql);
-
-                        // Kiểm tra kết quả truy vấn và thêm các tùy chọn vào thẻ select
                         if ($result->num_rows > 0) {
                             while ($row = $result->fetch_assoc()) {
                                 echo '<option value="' . $row["maNhanVien"] . '">' . $row["hoTenNhanVien"] . '</option>';
@@ -311,6 +315,5 @@ function getEmployeesByDepartment(departmentId) {
         </div>
     </div>
 </div>
-
 
 </html>
