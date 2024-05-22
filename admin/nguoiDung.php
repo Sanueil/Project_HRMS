@@ -289,9 +289,7 @@ if (isset($_GET['maNhanVien'])) {
                     <!-- Thông tin chi tiết người dùng sẽ được hiển thị ở đây -->
                     <div id="employeeDetail"></div>
                 </div>
-                <button type="button" class="close" id="closeUserInfoModal" onclick="closeUserInfoModal()">
-                    <span>&times;</span>
-                </button>
+
             </div>
         </div>
     </div>
