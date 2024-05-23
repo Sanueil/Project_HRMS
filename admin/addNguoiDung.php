@@ -6,7 +6,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Thêm Người Dùng</title>
     <!-- Bootstrap CSS -->
-    <!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css"> -->
     <style>
     td {
         padding: 2rem;
@@ -24,13 +23,101 @@
         <?php unset($_SESSION['message']); ?>
         <?php endif; ?>
     };
+
+    function validateForm() {
+        let isValid = true;
+
+        const maNhanVien = document.getElementById('maNhanVien');
+        const hoTenNhanVien = document.getElementById('hoTenNhanVien');
+        const diaChi = document.getElementById('diaChi');
+        const soDienThoai = document.getElementById('soDienThoai');
+        const gioiTinh = document.getElementById('gioiTinh');
+        const email = document.getElementById('email');
+        const chucVu = document.getElementById('chucVu');
+        const ngaySinh = document.getElementById('ngaySinh');
+        const hinhAnh = document.getElementById('hinhAnh');
+
+        // Clear previous error messages
+        const errorMessages = document.querySelectorAll('.error-message');
+        errorMessages.forEach(msg => {
+            msg.style.display = 'none';
+        });
+        // Validate Mã Nhân Viên
+        if (!maNhanVien.value.match(/^\d+$/)) {
+            document.getElementById('maNhanVienError').style.display = 'block';
+            isValid = false;
+        }
+
+        // Validate Họ Tên Nhân Viên
+        if (!hoTenNhanVien.value.match(/^[A-Za-z ]+$/)) {
+            document.getElementById('hoTenNhanVienError').style.display = 'block';
+            isValid = false;
+        }
+
+        // Validate Số Điện Thoại
+        if (!soDienThoai.value.match(/^0\d{9}$/)) {
+            document.getElementById('soDienThoaiError').style.display = 'block';
+            isValid = false;
+        }
+
+        // Validate Email
+        if (!email.value.match(/[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/)) {
+            document.getElementById('emailError').style.display = 'block';
+            isValid = false;
+        }
+
+        // Validate Ngày Sinh
+        if (!ngaySinh.value) {
+            document.getElementById('ngaySinhError').style.display = 'block';
+            isValid = false;
+        }
+
+        // Validate Hình Ảnh
+        if (!hinhAnh.value) {
+            document.getElementById('hinhAnhError').style.display = 'block';
+            isValid = false;
+        }
+
+        return isValid;
+    }
+
+    function showAlert(message) {
+        alert(message);
+    }
+
+    function generateQrCode() {
+        const maNhanVien = document.getElementById('maNhanVien').value;
+        const hoTenNhanVien = document.getElementById('hoTenNhanVien').value;
+        const diaChi = document.getElementById('diaChi').value;
+        const soDienThoai = document.getElementById('soDienThoai').value;
+        const gioiTinh = document.getElementById('gioiTinh').value;
+        const email = document.getElementById('email').value;
+        const chucVu = document.getElementById('chucVu').value;
+        const ngaySinh = document.getElementById('ngaySinh').value;
+        const hinhAnh = document.getElementById('hinhAnh').value;
+
+        const qrData =
+            `Mã Nhân Viên: ${maNhanVien} - Họ Tên: ${hoTenNhanVien} - Địa Chỉ: ${diaChi} - Số Điện Thoại: ${soDienThoai} - Giới Tính: ${gioiTinh} - Email: ${email} - Chức Vụ: ${chucVu} - Ngày Sinh: ${ngaySinh}`;
+
+        if (maNhanVien && hoTenNhanVien && diaChi && soDienThoai && gioiTinh && email && chucVu && ngaySinh &&
+            hinhAnh) {
+            const apiUrl =
+                `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(qrData)}`;
+            document.getElementById('qrImg').src = apiUrl;
+            document.getElementById('generatedCode').value = apiUrl;
+            document.querySelector('.qr-con').style.display = '';
+        } else {
+            alert("Vui lòng nhập đầy đủ thông tin để tạo mã QR.");
+        }
+    }
     </script>
 
 </head>
 
 <body>
     <h1>Thêm Người Dùng</h1>
-    <form id="addUserForm" action="../controller/addNguoiDung.php" method="POST" enctype="multipart/form-data">
+    <form id="addUserForm" action="../controller/addNguoiDung.php" method="POST" enctype="multipart/form-data"
+        onsubmit="return validateForm()">
         <div class="row">
             <div class="col-md-6">
                 <div class="form-group">
@@ -104,102 +191,6 @@
         </div>
         <button type="submit" class="btn btn-primary" name="submit">Thêm</button>
     </form>
-
-    <script>
-    function validateForm() {
-        let isValid = true;
-
-        const maNhanVien = document.getElementById('maNhanVien');
-        const hoTenNhanVien = document.getElementById('hoTenNhanVien');
-        const diaChi = document.getElementById('diaChi');
-        const soDienThoai = document.getElementById('soDienThoai');
-        const gioiTinh = document.getElementById('gioiTinh');
-        const email = document.getElementById('email');
-        const chucVu = document.getElementById('chucVu');
-        const ngaySinh = document.getElementById('ngaySinh');
-        const hinhAnh = document.getElementById('hinhAnh');
-
-        // Clear previous error messages
-        const errorMessages = document.querySelectorAll('.error-message');
-        errorMessages.forEach(msg => {
-            msg.style.display = 'none';
-        });
-
-        // Validate Mã Nhân Viên
-        if (!maNhanVien.value.match(/^\d+$/)) {
-            document.getElementById('maNhanVienError').style.display = 'block';
-            isValid = false;
-        }
-
-        // Validate Họ Tên Nhân Viên
-        if (!hoTenNhanVien.value.match(/^[A-Za-z ]+$/)) {
-            document.getElementById('hoTenNhanVienError').style.display = 'block';
-            isValid = false;
-        }
-
-        // Validate Số Điện Thoại
-        if (!soDienThoai.value.match(/^0\d{9}$/)) {
-            document.getElementById('soDienThoaiError').style.display = 'block';
-            isValid = false;
-        }
-
-        // Validate Email
-        if (!email.value.match(/[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/)) {
-            document.getElementById('emailError').style.display = 'block';
-            isValid = false;
-        }
-
-        // Validate Ngày Sinh
-        if (!ngaySinh.value) {
-            document.getElementById('ngaySinhError').style.display = 'block';
-            isValid = false;
-        }
-
-        // Validate Hình Ảnh
-        if (!hinhAnh.value) {
-            document.getElementById('hinhAnhError').style.display = 'block';
-            isValid = false;
-        }
-
-        return isValid;
-    }
-
-    function showAlert(message) {
-        alert(message);
-    }
-
-    function generateQrCode() {
-        const maNhanVien = document.getElementById('maNhanVien').value;
-        const hoTenNhanVien = document.getElementById('hoTenNhanVien').value;
-        const diaChi = document.getElementById('diaChi').value;
-        const soDienThoai = document.getElementById('soDienThoai').value;
-        const gioiTinh = document.getElementById('gioiTinh').value;
-        const email = document.getElementById('email').value;
-        const chucVu = document.getElementById('chucVu').value;
-        const ngaySinh = document.getElementById('ngaySinh').value;
-        const hinhAnh = document.getElementById('hinhAnh').value;
-
-        const qrData = `Mã Nhân Viên: ${maNhanVien} -
-                            Họ Tên: ${hoTenNhanVien} -
-                            Địa Chỉ: ${diaChi} -
-                            Số Điện Thoại: ${soDienThoai} -
-                            Giới Tính: ${gioiTinh} -
-                            Email: ${email} -
-                            Chức Vụ: ${chucVu} -
-                            Ngày Sinh: ${ngaySinh}`;
-
-        if (maNhanVien && hoTenNhanVien && diaChi && soDienThoai && gioiTinh && email && chucVu && ngaySinh &&
-            hinhAnh) {
-            const apiUrl =
-                `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(qrData)}`;
-            document.getElementById('qrImg').src = apiUrl;
-            document.getElementById('generatedCode').value = qrData;
-            document.querySelector('.qr-con').style.display = '';
-        } else {
-            alert("Vui lòng nhập đầy đủ thông tin để tạo mã QR.");
-        }
-    }
-    </script>
 </body>
 
 </html>
