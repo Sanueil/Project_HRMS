@@ -106,7 +106,7 @@
                                 <th scope="col">ID</th>
                                 <th scope="col">Mã nhân viên</th>
                                 <th scope="col">Họ và tên</th>
-                                <th scope="col">Phòng ban</th>
+                                <!-- <th scope="col">Phòng ban</th> -->
                                 <th scope="col">Thời gian chấm công</th>
                                 <th scope="col">Trạng thái</th>
                             </tr>
@@ -118,6 +118,7 @@
                                 LEFT JOIN nhan_vien nv ON cc.maNhanVien = nv.maNhanVien
                                 LEFT JOIN nhan_vien_phong_ban nvpb ON nv.maNhanVien = nvpb.maNhanVien
                                 LEFT JOIN phong_ban pb ON nvpb.maPhongBan = pb.maPhongBan
+                                WHERE  cc.maNhanVien = $username 
                                 ORDER BY cc.thoiGianChamCong DESC";
 
                             $stmt = $db->prepare($query);
@@ -150,7 +151,7 @@
                                     $attendanceID = $row["maChamCong"];
                                     $employeeCode = $row["maNhanVien"];
                                     $employeeName = $row["hoTenNhanVien"];
-                                    $employeePosition = $row["tenPhongBan"];
+                                    // $employeePosition = $row["tenPhongBan"];
                                     $time = $row["thoiGianChamCong"];
                                     $status = $row["trangThai"];
 
@@ -166,7 +167,7 @@
                                     echo "<th scope='row'>$attendanceID</th>";
                                     echo "<td>$employeeCode</td>";
                                     echo "<td>$employeeName</td>";
-                                    echo "<td>$employeePosition</td>";
+                                    // echo "<td>$employeePosition</td>";
                                     echo "<td>$time</td>";
                                     echo "<td>$status</td>";
                                     echo "</tr>";
@@ -197,7 +198,7 @@
                                     if ($page == $current_page) {
                                         echo '<li class="page-item active"><a class="page-link" href="#">' . $page . '</a></li>';
                                     } else {
-                                        echo '<li class="page-item"><a class="page-link" href="home.php?user=' . $_GET['user'] . '&table=' . $_GET['table'] . '&page=' . $page . '">' . $page . '</a></li>';
+                                        echo '<li class="page-item"><a class="page-link" href="home.php?user=' . $_GET['user'] . '&username=' . $username . '&table=' . $_GET['table'] . '&page=' . $page . '">' . $page . '</a></li>';
                                     }
                                 }
                             ?>

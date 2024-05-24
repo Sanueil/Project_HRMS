@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="vi">
 
 <head>
     <meta charset="UTF-8">
@@ -14,21 +14,43 @@
         right: 0;
         bottom: 0;
         background-color: rgba(0, 0, 0, 0.5);
-        /* Màu đen với độ trong suốt 50% */
         z-index: 8;
-        /* Z-index nhỏ hơn form để nó nằm dưới form */
         display: none;
-        /* Ẩn mặc định */
+    }
+
+    /* Spinner khi đang tải dữ liệu */
+    .spinner {
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        width: 3rem;
+        height: 3rem;
+        z-index: 9;
+        border: 0.4rem solid #f3f3f3;
+        border-top: 0.4rem solid #3498db;
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+        display: none;
+    }
+
+    @keyframes spin {
+        0% {
+            transform: translate(-50%, -50%) rotate(0deg);
+        }
+
+        100% {
+            transform: translate(-50%, -50%) rotate(360deg);
+        }
     }
     </style>
-    <!-- Include Chart.js library -->
+    <!-- Bao gồm thư viện Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 
 <body>
     <div class="container">
         <h1 class="mt-4">Báo cáo hiệu suất và thống kê thời gian làm của nhân viên</h1>
-        <!-- Filter form -->
+        <!-- Form lọc -->
         <div class="row align-items-center">
             <div class="col-auto">
                 <form id="filterForm">
@@ -52,10 +74,10 @@
         </div>
     </div>
 
-    <!-- Canvas for displaying work time chart -->
+    <!-- Canvas để hiển thị biểu đồ thời gian làm việc -->
     <canvas id="workTimeChart"></canvas>
 
-    <!-- Report Modal -->
+    <!-- Modal báo cáo -->
     <div class="modal" id="reportModal" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog modal-lg">
             <div class="modal-content">
@@ -66,20 +88,21 @@
                     </button>
                 </div>
                 <div class="modal-body">
-                    <!-- Your report content goes here -->
+                    <!-- Nội dung báo cáo -->
                     <p>Thêm nội dung báo cáo ở đây...</p>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" id="closeReportModal"
                         onclick="closeReportModal()">Đóng</button>
-                    <!-- Button for exporting chart -->
-                    <button type="button" class="btn btn-primary" id="exportChartButton" onclick="exportChart()">Xuất
-                        biểu đồ</button>
+                    <!-- Nút xuất biểu đồ -->
+                    <button type="button" class="btn btn-primary" id="exportChartButtonModal"
+                        onclick="exportChart()">Xuất biểu đồ</button>
                 </div>
             </div>
         </div>
     </div>
     <div id="overlay" class="overlay"></div>
+    <div class="spinner" id="loadingSpinner"></div>
 
     <!-- Script -->
     <script>
@@ -94,13 +117,27 @@
         document.getElementById("overlay").style.display = "none";
     }
 
+    function showLoadingSpinner() {
+        document.getElementById("loadingSpinner").style.display = "block";
+    }
+
+    function hideLoadingSpinner() {
+        document.getElementById("loadingSpinner").style.display = "none";
+    }
+
     function getWorkTimeDataAndDrawChart() {
+        showLoadingSpinner();
         var xhr = new XMLHttpRequest();
         xhr.open("GET", "../../controller/get_work_time_data.php", true);
         xhr.onreadystatechange = function() {
-            if (xhr.readyState == 4 && xhr.status == 200) {
-                var data = JSON.parse(xhr.responseText);
-                drawWorkTimeChart(data);
+            if (xhr.readyState == 4) {
+                hideLoadingSpinner();
+                if (xhr.status == 200) {
+                    var data = JSON.parse(xhr.responseText);
+                    drawWorkTimeChart(data);
+                } else {
+                    alert("Không thể lấy dữ liệu. Vui lòng thử lại sau.");
+                }
             }
         };
         xhr.send();
@@ -121,6 +158,7 @@
                 }]
             },
             options: {
+                responsive: true,
                 scales: {
                     y: {
                         beginAtZero: false,
@@ -147,12 +185,18 @@
     }
 
     function getFilteredWorkTimeDataAndDrawChart(dateFilter) {
+        showLoadingSpinner();
         var xhr = new XMLHttpRequest();
         xhr.open("GET", "../../controller/get_filtered_work_time_data.php?date=" + dateFilter, true);
         xhr.onreadystatechange = function() {
-            if (xhr.readyState == 4 && xhr.status == 200) {
-                var data = JSON.parse(xhr.responseText);
-                drawWorkTimeChart(data);
+            if (xhr.readyState == 4) {
+                hideLoadingSpinner();
+                if (xhr.status == 200) {
+                    var data = JSON.parse(xhr.responseText);
+                    drawWorkTimeChart(data);
+                } else {
+                    alert("Không thể lấy dữ liệu lọc. Vui lòng thử lại sau.");
+                }
             }
         };
         xhr.send();

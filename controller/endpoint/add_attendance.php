@@ -6,8 +6,11 @@ $db = new Database();
 $conn = $db->connect();
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+
     if (isset($_POST['qr_code'])) {
+        $username = isset($_SESSION['quanly_user']['username']) ? $_SESSION['quanly_user']['username'] : (isset($_SESSION['nhanvien_user']['username']) ? $_SESSION['nhanvien_user']['username'] : '');
         $qrCode = $_POST['qr_code'];
+
         // Phân tách chuỗi thành mảng các phần tử dựa trên dấu "-"
         $qrParts = explode("-", $qrCode);
         // Mảng để lưu trữ thông tin được trích xuất
@@ -32,8 +35,24 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $maNhanVien = $info['MÃ£ NhÃ¢n ViÃªn'];
         $hoTen = str_replace(' ', '_', $info['Há» TÃªn']);
         $qrFilename = $maNhanVien . "_" . $hoTen . ".png";
+        function redirectWithError($errorMessage)
+        {
+            $_SESSION['previous_url'] = $_SERVER['HTTP_REFERER'];
 
-        // Lấy danh sách các mã QR hợp lệ từ cơ sở dữ liệu
+            $role = isset($_SESSION['quanly_user']['username']) ? 'quanly' : (isset($_SESSION['nhanvien_user']['username']) ? 'nhanvien' : '');
+            $username = isset($_SESSION['quanly_user']['username']) ? $_SESSION['quanly_user']['username'] : (isset($_SESSION['nhanvien_user']['username']) ? $_SESSION['nhanvien_user']['username'] : '');
+            $url = "home.php?user=" . $role . "&username=" . $username . "&table=chamCongQR";
+
+            $redirectUrl = "../../user/" . $role . "/" . $url;
+            echo "<script>alert('$errorMessage');</script>";
+            echo "<script>window.location.href = '$redirectUrl';</script>";
+            exit();
+        }
+
+        if ($maNhanVien !== $username) {
+            redirectWithError('Mã nhân viên không khớp!');
+        }
+
         $validQRCodesQuery = "SELECT maQR FROM nhan_vien";
         $validQRCodesResult = $db->query($validQRCodesQuery);
 
@@ -42,20 +61,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $validQRCodes[] = $row['maQR'];
         }
 
-        // Kiểm tra xem mã QR được cung cấp có trong danh sách các mã QR hợp lệ không
         if (!in_array($qrFilename, $validQRCodes)) {
-            // Lưu URL trước đó vào session
-            $_SESSION['previous_url'] = $_SERVER['HTTP_REFERER'];
-
-            // Tạo URL đầy đủ với ID được truyền vào
-            $role = isset($_SESSION['quanly_user']['username']) ? 'quanly' : (isset($_SESSION['nhanvien_user']['username']) ? 'nhanvien' : '');
-            $username = isset($_SESSION['quanly_user']['username']) ? $_SESSION['quanly_user']['username'] : (isset($_SESSION['nhanvien_user']['username']) ? $_SESSION['nhanvien_user']['username'] : '');
-            $url = "home.php?user=" . $role . "&username=" . $username . "&table=chamCongQR";
-
-            $redirectUrl = "../../user/" . $role . "/" . $url;
-            echo "<script>alert('Mã QR không hợp lệ!');</script>";
-            // echo "<script>window.location.href = '$redirectUrl';</script>";
-            exit(); // Dừng thực thi script
+            redirectWithError('Mã QR không hợp lệ!');
         }
 
         // Lấy mã nhân viên từ mã QR
@@ -74,23 +81,23 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             date_default_timezone_set('Asia/Ho_Chi_Minh');
 
             // Thời gian bắt đầu và kết thúc chấm công đúng giờ (08h00 - 08h10)
-            $onTimeStart = strtotime(date("Y-m-d 08:00:00"));
-            $onTimeEnd = strtotime(date("Y-m-d 08:10:00"));
+            $onTimeStart = strtotime(date("Y-m-d 21:00:00"));
+            $onTimeEnd = strtotime(date("Y-m-d 21:05:00"));
 
-            // Thời gian bắt đầu và kết thúc chấm công tan ca (17h00 - 17h10)
-            $overtimeStart = strtotime(date("Y-m-d 17:00:00"));
-            $overtimeEnd = strtotime(date("Y-m-d 17:10:00"));
+            // Thời gian bắt đầu và kết thúc chấm công tan ca (21h06 - 21h09)
+            $overtimeStart = strtotime(date("Y-m-d 21:06:00"));
+            $overtimeEnd = strtotime(date("Y-m-d 21:17:00"));
 
-            // Thời gian bắt đầu và kết thúc thời gian tăng ca (18h30 - 23h10)
-            $nightShiftStart = strtotime(date("Y-m-d 18:30:00"));
-            $nightShiftEnd = strtotime(date("Y-m-d 23:10:00"));
+            // Thời gian bắt đầu và kết thúc thời gian tăng ca (21h10 - 21h15)
+            $nightShiftStart = strtotime(date("Y-m-d 21:17:00"));
+            $nightShiftEnd = strtotime(date("Y-m-d 21:21:00"));
 
             // Trạng thái chấm công
             $attendanceStatus = "";
 
             // Kiểm tra xem nhân viên đã chấm công trong buổi đó chưa
             $attendanceCheckQuery = "SELECT * FROM cham_cong WHERE maNhanVien = ? AND DATE(thoiGianChamCong) = CURDATE() AND trangThai = ?";
-            
+
             if ($current_time >= $onTimeStart && $current_time < $onTimeEnd) {
                 $attendanceStatus = "Đúng giờ";
             } elseif ($current_time >= $overtimeStart && $current_time <= $overtimeEnd) {

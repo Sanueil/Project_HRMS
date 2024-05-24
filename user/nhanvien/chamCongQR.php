@@ -118,6 +118,7 @@
                                 LEFT JOIN nhan_vien nv ON cc.maNhanVien = nv.maNhanVien
                                 LEFT JOIN nhan_vien_phong_ban nvpb ON nv.maNhanVien = nvpb.maNhanVien
                                 LEFT JOIN phong_ban pb ON nvpb.maPhongBan = pb.maPhongBan
+                                WHERE  cc.maNhanVien = $username 
                                 ORDER BY cc.thoiGianChamCong DESC";
 
                             $stmt = $db->prepare($query);
@@ -197,7 +198,7 @@
                                     if ($page == $current_page) {
                                         echo '<li class="page-item active"><a class="page-link" href="#">' . $page . '</a></li>';
                                     } else {
-                                        echo '<li class="page-item"><a class="page-link" href="home.php?user=' . $_GET['user'] . '&table=' . $_GET['table'] . '&page=' . $page . '">' . $page . '</a></li>';
+                                        echo '<li class="page-item"><a class="page-link" href="home.php?user=' . $_GET['user'] . '&username=' . $username . '&table=' . $_GET['table'] . '&page=' . $page . '">' . $page . '</a></li>';
                                     }
                                 }
                             ?>
