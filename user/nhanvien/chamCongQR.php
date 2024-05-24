@@ -85,7 +85,7 @@
             <div class="qr-container col-3">
                 <div class="scanner-con">
                     <h5 class="text-center">Quét mã QR ở đây</h5>
-                    <video id="interactive" class="viewport" width="100%">
+                    <video id="interactive" class="viewport" width="100%"></video>
                 </div>
 
                 <div class="qr-detected-container" style="display: none;">
@@ -109,7 +109,6 @@
                                 <th scope="col">Phòng ban</th>
                                 <th scope="col">Thời gian chấm công</th>
                                 <th scope="col">Trạng thái</th>
-                                <!-- <th scope="col">Điều chỉnh</th> -->
                             </tr>
                         </thead>
                         <tbody>
@@ -118,11 +117,33 @@
                                 FROM cham_cong cc
                                 LEFT JOIN nhan_vien nv ON cc.maNhanVien = nv.maNhanVien
                                 LEFT JOIN nhan_vien_phong_ban nvpb ON nv.maNhanVien = nvpb.maNhanVien
-                                LEFT JOIN phong_ban pb ON nvpb.maPhongBan = pb.maPhongBan";
+                                LEFT JOIN phong_ban pb ON nvpb.maPhongBan = pb.maPhongBan
+                                ORDER BY cc.thoiGianChamCong DESC";
 
                             $stmt = $db->prepare($query);
                             $stmt->execute();
                             $result = $stmt->get_result();
+
+                            // Hiển thị mỗi trang chỉ có 3 bản ghi
+                            $records_per_page = 6;
+
+                            // Lấy số trang hiện tại từ tham số truyền vào
+                            $current_page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
+                            if ($current_page < 1) {
+                                $current_page = 1;
+                            }
+
+                            // Tính toán offset để lấy bản ghi từ cơ sở dữ liệu dựa trên số trang hiện tại
+                            $offset = ($current_page - 1) * $records_per_page;
+
+                            // Fetch bản ghi từ database với limit và offset
+                            $query .= " LIMIT $records_per_page OFFSET $offset";
+                            $stmt = $db->prepare($query);
+                            $stmt->execute();
+                            $result = $stmt->get_result();
+
+                            // Biến để lưu trữ ngày trước đó
+                            $previous_date = null;
 
                             if ($result) {
                                 while ($row = $result->fetch_assoc()) {
@@ -132,30 +153,60 @@
                                     $employeePosition = $row["tenPhongBan"];
                                     $time = $row["thoiGianChamCong"];
                                     $status = $row["trangThai"];
-                                    ?>
-                            <tr>
-                                <th scope="row"><?= $attendanceID ?></th>
-                                <td><?= $employeeCode ?></td>
-                                <td><?= $employeeName ?></td>
-                                <td><?= $employeePosition ?></td>
-                                <td><?= $time ?></td>
-                                <td><?= $status ?></td>
-                            </tr>
-                            <?php
+
+                                    // Lấy ngày từ thời gian chấm công
+                                    $current_date = date('Y-m-d', strtotime($time));
+
+                                    // Kiểm tra nếu ngày hiện tại khác với ngày trước đó, thì hiển thị dòng mới cho ngày mới
+                                    if ($current_date != $previous_date) {
+                                        echo "<tr><th colspan='6'>Ngày: $current_date</th></tr>";
+                                    }
+
+                                    echo "<tr>";
+                                    echo "<th scope='row'>$attendanceID</th>";
+                                    echo "<td>$employeeCode</td>";
+                                    echo "<td>$employeeName</td>";
+                                    echo "<td>$employeePosition</td>";
+                                    echo "<td>$time</td>";
+                                    echo "<td>$status</td>";
+                                    echo "</tr>";
+
+                                    // Cập nhật ngày trước đó
+                                    $previous_date = $current_date;
                                 }
-                            } else {
-                                echo "Lỗi truy vấn: " . $stmt->error;
                             }
                             ?>
                         </tbody>
                     </table>
+
+                    <nav aria-label="Page navigation">
+                        <ul class="pagination justify-content-center">
+                            <?php
+                                $query_count = "SELECT COUNT(*) AS total FROM cham_cong"; // Query để đếm tổng số bản ghi
+                                $stmt_count = $db->prepare($query_count);
+                                $stmt_count->execute();
+                                $count_result = $stmt_count->get_result();
+                                $row_count = mysqli_fetch_assoc($count_result);
+                                $total_records = $row_count['total'];
+                                                                
+                                // Tính toán tổng số trang
+                                $total_pages = ceil($total_records / $records_per_page);
+                                
+                                // Hiển thị các link phân trang
+                                for ($page = 1; $page <= $total_pages; $page++) {
+                                    if ($page == $current_page) {
+                                        echo '<li class="page-item active"><a class="page-link" href="#">' . $page . '</a></li>';
+                                    } else {
+                                        echo '<li class="page-item"><a class="page-link" href="home.php?user=' . $_GET['user'] . '&table=' . $_GET['table'] . '&page=' . $page . '">' . $page . '</a></li>';
+                                    }
+                                }
+                            ?>
+                        </ul>
+                    </nav>
                 </div>
             </div>
-
         </div>
-
     </div>
-
 
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.slim.min.js"></script>
@@ -197,12 +248,6 @@
     }
 
     document.addEventListener('DOMContentLoaded', startScanner);
-
-    // function deleteAttendance(id) {
-    //     if (confirm("Bạn có muốn loại bỏ chấm công này không?")) {
-    //         window.location = "./endpoint/delete_attendance.php?attendance=" + id;
-    //     }
-    // }
 
     document.addEventListener('DOMContentLoaded', function() {
         // Lấy giờ hiện tại

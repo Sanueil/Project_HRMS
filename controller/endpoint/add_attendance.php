@@ -74,16 +74,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             date_default_timezone_set('Asia/Ho_Chi_Minh');
 
             // Thời gian bắt đầu và kết thúc chấm công đúng giờ (08h00 - 08h10)
-            $onTimeStart = strtotime(date("Y-m-d 21:00:00"));
-            $onTimeEnd = strtotime(date("Y-m-d 21:05:00"));
+            $onTimeStart = strtotime(date("Y-m-d 08:00:00"));
+            $onTimeEnd = strtotime(date("Y-m-d 08:10:00"));
 
-            // Thời gian bắt đầu và kết thúc chấm công tan ca (21h06 - 21h09)
-            $overtimeStart = strtotime(date("Y-m-d 21:06:00"));
-            $overtimeEnd = strtotime(date("Y-m-d 21:17:00"));
+            // Thời gian bắt đầu và kết thúc chấm công tan ca (17h00 - 17h10)
+            $overtimeStart = strtotime(date("Y-m-d 17:00:00"));
+            $overtimeEnd = strtotime(date("Y-m-d 17:10:00"));
 
-            // Thời gian bắt đầu và kết thúc thời gian tăng ca (21h10 - 21h15)
-            $nightShiftStart = strtotime(date("Y-m-d 21:17:00"));
-            $nightShiftEnd = strtotime(date("Y-m-d 21:21:00"));
+            // Thời gian bắt đầu và kết thúc thời gian tăng ca (18h30 - 23h10)
+            $nightShiftStart = strtotime(date("Y-m-d 18:30:00"));
+            $nightShiftEnd = strtotime(date("Y-m-d 23:10:00"));
 
             // Trạng thái chấm công
             $attendanceStatus = "";
