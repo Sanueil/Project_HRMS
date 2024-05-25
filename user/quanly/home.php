@@ -40,10 +40,10 @@ document.addEventListener("DOMContentLoaded", function() {
         showAccounts('department');
     } else if (tableParam === 'chamCongQR') {
         showAccounts('chamCongQR');
-    } else if (tableParam === 'pheDuyet') {
-        showAccounts('pheDuyet');
-    } else if (tableParam === 'luong') {
-        showAccounts('luong');
+    } else if (tableParam === 'createLuong') {
+        showAccounts('createLuong');
+    } else if (tableParam === 'dsLuong') {
+        showAccounts('dsLuong');
     } else if (tableParam === 'baoCao') {
         showAccounts('baoCao');
     } else if (tableParam === 'danhGia') {

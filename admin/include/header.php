@@ -154,20 +154,6 @@ p {
                                         khoản</span></a></li>
                         </ul>
                     </li>
-
-                    <li>
-                        <a class="has-arrow" href="javascript:void()" aria-expanded="false">
-                            <i class="fa fa-file-text-o menu-icon"></i><span class="nav-text">Lương</span>
-                        </a>
-                        <ul aria-expanded="false">
-                            <li><a href="../admin/home.php?user=admin&table=createLuong"> <i
-                                        class="icon-plus menu-icon"></i><span class="nav-text">Tạo lương</span></a>
-                            </li>
-                            <li><a href="../admin/home.php?user=admin&table=dsLuong"> <i
-                                        class="fa fa-tasks menu-icon"></i><span class="nav-text">Danh sách
-                                        lương</span></a></li>
-                        </ul>
-                    </li>
                     <li>
                         <a href="../admin/home.php?user=admin&table=listqr">
                             <i class="fa fa-tasks menu-icon"></i><span class="nav-text">Danh sách QR</span>
@@ -275,24 +261,6 @@ p {
                             if (isset($_GET['table']) && $_GET['table'] === 'users') {
                                 include_once 'dsTK.php';
                             } ?>
-                        </div>
-                    </table>
-                    <table border="1" class="data-table" style="display: none;">
-                        <div id="createPayRoll">
-                            <?php
-                            if (isset($_GET['table']) && $_GET['table'] === 'createLuong') {
-                                include_once 'createPayRoll.php';
-                            }
-                            ?>
-                        </div>
-                    </table>
-                    <table border="1" class="data-table" style="display: none;">
-                        <div id="dsPayRoll">
-                            <?php
-                            if (isset($_GET['table']) && $_GET['table'] === 'dsLuong') {
-                                include_once 'dsLuong.php';
-                            }
-                            ?>
                         </div>
                     </table>
                     <table border="1" class="data-table" style="display: none;">

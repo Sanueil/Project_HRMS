@@ -23,7 +23,7 @@ if (isset($_POST['submit'])) {
     // Kiểm tra nếu hình ảnh đã được tải lên
     if (isset($_FILES["hinhAnh"]) && $_FILES["hinhAnh"]["error"] == 0) {
         // Xử lý tải lên hình ảnh
-        $target_dir = "../controller/uploads/";
+        $target_dir = "uploads/";
         $target_file = $target_dir . basename($_FILES["hinhAnh"]["name"]);
         $uploadOk = 1;
         $imageFileType = strtolower(pathinfo($target_file, PATHINFO_EXTENSION));

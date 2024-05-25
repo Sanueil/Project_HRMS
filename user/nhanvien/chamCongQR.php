@@ -92,7 +92,7 @@
                     <form action="../../controller/endpoint/add_attendance.php" method="POST">
                         <h4 class="text-center">Mã QR đã được quét!</h4>
                         <input type="hidden" id="detected-qr-code" name="qr_code">
-                        <button type="submit" class="btn btn-dark form-control">Chấp nhận</button>
+                        <button type="submit" class="btn btn-dark form-control" id="accept-btn">Chấp nhận</button>
                     </form>
                 </div>
             </div>

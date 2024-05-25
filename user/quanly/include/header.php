@@ -136,13 +136,22 @@ if ($result_anh) {
                             <li><a href="<?php echo $url; ?>&table=chamCongQR"><i class="fa fa-qrcode menu-icon"></i>
                                     <span class="nav-text">Chấm công bằng mã
                                         QR</span></a></li>
-                            <li><a href="<?php echo $url; ?>&table=pheDuyet"><i
-                                        class="fa fa-check-circle menu-icon"></i><span class="nav-text">Phê duyệt bảng
-                                        chấm công nhân
-                                        viên</span></a></li>
-                            <li><a href="<?php echo $url; ?>&table=luong"><i class="fa fa-money menu-icon"></i><span
-                                        class="nav-text">Quản lý
-                                        lương</span></a></li>
+
+                            <li>
+                                <a class="has-arrow" href="javascript:void()" aria-expanded="false">
+                                    <i class="fa fa-file-text-o menu-icon"></i><span class="nav-text">Lương</span>
+                                </a>
+                                <ul aria-expanded="false">
+                                    <li><a href="<?php echo $url; ?>&table=createLuong"> <i
+                                                class="icon-plus menu-icon"></i><span class="nav-text">Tạo
+                                                lương</span></a>
+                                    </li>
+                                    <li><a href="<?php echo $url; ?>&table=dsLuong"> <i
+                                                class="fa fa-tasks menu-icon"></i><span class="nav-text">Danh sách
+                                                lương</span></a></li>
+                                </ul>
+                            </li>
+
                             <li><a href="<?php echo $url; ?>&table=baoCao"><i
                                         class="fa fa-bar-chart menu-icon"></i><span class="nav-text">Báo cáo và thống
                                         kê</span></a></li>
@@ -159,11 +168,7 @@ if ($result_anh) {
                             <i class="fa fa-user menu-icon"></i><span class="nav-text">Hồ sơ</span>
                         </a>
                     </li>
-                    <li>
-                        <a href="<?php echo $url; ?>&table=listqr">
-                            <i class="fa fa-tasks menu-icon"></i><span class="nav-text">Danh sách QR</span>
-                        </a>
-                    </li>
+
                     <li>
                         <a href="<?php echo $url; ?>&table=setting">
                             <i class="fa fa-cog menu-icon"></i><span class="nav-text">Cài đặt</span>
@@ -223,20 +228,23 @@ if ($result_anh) {
                             } ?>
                         </div>
                     </div>
-                    <table border="1" class="data-table" id="pheDuyet" style="display: none;">
-                        <div id="pheDuyet">
+
+                    <table border="1" class="data-table" style="display: none;">
+                        <div id="createPayRoll">
                             <?php
-                            if (isset($_GET['table']) && $_GET['table'] === 'pheDuyet') {
-                                include_once 'pheDuyet.php'; // Bao gồm biểu mẫu 
-                            } ?>
+                            if (isset($_GET['table']) && $_GET['table'] === 'createLuong') {
+                                include_once 'createPayRoll.php';
+                            }
+                            ?>
                         </div>
                     </table>
-                    <table border="1" class="data-table" id="luong" style="display: none;">
-                        <div id="luong">
+                    <table border="1" class="data-table" style="display: none;">
+                        <div id="dsPayRoll">
                             <?php
-                            if (isset($_GET['table']) && $_GET['table'] === 'luong') {
-                                include_once 'luong.php'; // Bao gồm biểu mẫu 
-                            } ?>
+                            if (isset($_GET['table']) && $_GET['table'] === 'dsLuong') {
+                                include_once 'dsLuong.php';
+                            }
+                            ?>
                         </div>
                     </table>
 

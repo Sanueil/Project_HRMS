@@ -9,7 +9,7 @@
 
 <body>
     <h1>Tạo Lương</h1>
-    <form action="../controller/payroll.php" method="POST" enctype="multipart/form-data">
+    <form action="../../controller/payroll.php" method="POST" enctype="multipart/form-data">
         <div class="row">
             <div class="col-md-5">
                 <div class="form-group" style="display: none;">

@@ -51,6 +51,33 @@ $row = mysqli_fetch_assoc($result);
         </table>
     </div>
 
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script>
+    $(document).ready(function() {
+        $('#imageInput').change(function() {
+            var formData = new FormData();
+            var file = $(this)[0].files[0];
+            formData.append('image', file);
+
+            $.ajax({
+                url: '../../controller/upload.php',
+                type: 'POST',
+                data: formData,
+                processData: false,
+                contentType: false,
+                success: function(response) {
+                    $('#profileImage').attr('src', response);
+                    alert('Hình ảnh đã được cập nhật thành công!');
+                },
+                error: function(xhr, status, error) {
+                    console.error(xhr.responseText);
+                    alert('Đã xảy ra lỗi: ' + xhr.responseText);
+                }
+            });
+        });
+    });
+    </script>
+
     <!-- Modal -->
     <div class="modal fade" id="editProfileModal" tabindex="-1" role="dialog" aria-labelledby="editProfileModalLabel"
         aria-hidden="true">

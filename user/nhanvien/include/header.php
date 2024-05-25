@@ -39,6 +39,39 @@ if ($result_anh) {
     // Xử lý lỗi nếu truy vấn không thành công
     echo "Lỗi: " . mysqli_error($db);
 }
+// Sử dụng Prepared Statement để bảo vệ câu truy vấn khỏi SQL Injection
+$query = "SELECT COUNT(*) as user_count FROM tai_khoan WHERE maNhanVien = ?";
+$stmt = $db->prepare($query);
+$stmt->bind_param("s", $username);
+$stmt->execute();
+$result = $stmt->get_result();
+$row = $result->fetch_assoc();
+$stmt->close();
+
+// Kiểm tra trạng thái của tài khoản
+if ($row['user_count'] == 0) {
+    // Lưu thông báo vào biến phiên
+    $_SESSION['account_message'] = "Tài khoản không tồn tại hoặc đã bị xóa.";
+
+    // Chuyển hướng người dùng đến trang đăng nhập sau một khoảng thời gian
+    $_SESSION['redirect'] = true;
+}
+
+
+// Hiển thị thông báo nếu có
+if (isset($_SESSION['account_message'])) {
+    // Hiển thị thông báo bằng JavaScript trước khi chuyển hướng
+    echo '<script type="text/javascript">';
+    echo 'alert("' . $_SESSION['account_message'] . '");';
+    echo 'window.location.href = "../../login.php";'; // Chuyển hướng sau khi hiển thị thông báo
+    echo '</script>';
+
+    // Xóa thông báo sau khi đã hiển thị
+    unset($_SESSION['account_message']);
+
+    // Ngăn không cho mã HTML phía dưới được thực thi
+    exit;
+}
 ?>
 <!DOCTYPE html>
 <html lang="en">

@@ -5,7 +5,7 @@ include_once ('../controller/connect.php');
 $dbs = new Database();
 $db = $dbs->connect();
 // Số lượng bản ghi trên mỗi trang
-$records_per_page = 10;
+$records_per_page = 5;
 
 // Lấy số trang hiện tại từ tham số truyền vào
 $current_page = isset($_GET['page']) ? $_GET['page'] : 1;
@@ -138,7 +138,7 @@ if (isset($_GET['username'])) {
                     <?php
                     // Hiển thị các nút điều hướng
                     for ($i = 1; $i <= $total_pages; $i++) {
-                        echo "<li class='page-item'><a class='page-link' href='home.php?user=admin&table=dsUsers&page=$i'>$i</a></li>";
+                        echo "<li class='page-item'><a class='page-link' href='home.php?user=admin&table=users&page=$i'>$i</a></li>";
                     }
                     ?>
                 </ul>
