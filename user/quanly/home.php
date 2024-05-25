@@ -48,6 +48,8 @@ document.addEventListener("DOMContentLoaded", function() {
         showAccounts('baoCao');
     } else if (tableParam === 'danhGia') {
         showAccounts('danhGia');
+    } else if (tableParam === 'dsNhanVien') {
+        showAccounts('dsNhanVien');
     } else if (tableParam === 'profile') {
         showAccounts('profile');
     } else if (tableParam === 'add') {

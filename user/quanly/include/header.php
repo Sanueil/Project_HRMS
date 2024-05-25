@@ -158,7 +158,8 @@ if ($result_anh) {
                             <li><a href="<?php echo $url; ?>&table=danhGia"><i class="fa fa-star menu-icon"></i><span
                                         class="nav-text">Đánh giá nhân
                                         viên</span></a></li>
-                            <li><a href="#"><i class="fa fa-users menu-icon"></i><span class="nav-text">Nhập/Xuất danh
+                            <li><a href="<?php echo $url; ?>&table=dsNhanVien"><i
+                                        class="fa fa-users menu-icon"></i><span class="nav-text">Xuất danh
                                         sách nhân viên</span></a></li>
                         </ul>
                     </li>
@@ -261,6 +262,14 @@ if ($result_anh) {
                             <?php
                             if (isset($_GET['table']) && $_GET['table'] === 'danhGia') {
                                 include_once 'danhGia.php'; // Bao gồm biểu mẫu 
+                            } ?>
+                        </div>
+                    </table>
+                    <table border="1" class="data-table" id="dsNhanVien" style="display: none;">
+                        <div id="dsNhanVien">
+                            <?php
+                            if (isset($_GET['table']) && $_GET['table'] === 'dsNhanVien') {
+                                include_once 'xuatDSNhanVien.php'; // Bao gồm biểu mẫu 
                             } ?>
                         </div>
                     </table>

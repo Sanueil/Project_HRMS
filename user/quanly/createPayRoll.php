@@ -34,7 +34,7 @@
                                         SELECT maNhanVien FROM luong
                                     ); 
                                     ";
-                                $result = $p->query($sql);
+                                $result = $dbs->query($sql);
                                 while ($row = $result->fetch_assoc()) {
                                     // Hiển thị tên nhân viên trong danh sách chọn
                                     echo '<option value="' . $row['maNhanVien'] . '" data-maphongban="' . $row['maPhongBan'] . '">' . $row['maNhanVien'] . ' - ' . $row['hoTenNhanVien'] . '</option>';
