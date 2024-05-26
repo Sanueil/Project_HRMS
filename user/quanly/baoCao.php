@@ -107,15 +107,7 @@
     <!-- Script -->
     <script>
     // Gọi hàm để lấy dữ liệu và vẽ biểu đồ khi trang được tải
-    getWorkTimeDataAndDrawChart();
-
-    // Thiết lập ngày mặc định cho bộ lọc
-    setDefaultDateFilter();
-
-    function closeReportModal() {
-        document.getElementById("reportModal").style.display = "none";
-        document.getElementById("overlay").style.display = "none";
-    }
+    getAggregatedWorkTimeDataAndDrawChart();
 
     function showLoadingSpinner() {
         document.getElementById("loadingSpinner").style.display = "block";
@@ -125,10 +117,10 @@
         document.getElementById("loadingSpinner").style.display = "none";
     }
 
-    function getWorkTimeDataAndDrawChart() {
+    function getAggregatedWorkTimeDataAndDrawChart() {
         showLoadingSpinner();
         var xhr = new XMLHttpRequest();
-        xhr.open("GET", "../../controller/get_work_time_data.php", true);
+        xhr.open("GET", "../../controller/get_aggregated_work_time_data.php", true);
         xhr.onreadystatechange = function() {
             if (xhr.readyState == 4) {
                 hideLoadingSpinner();
@@ -148,10 +140,10 @@
         var workTimeChart = new Chart(ctx, {
             type: 'bar',
             data: {
-                labels: data.dates, // Sử dụng dữ liệu ngày từ server
+                labels: data.maNhanVien, // Sử dụng dữ liệu mã nhân viên từ server
                 datasets: [{
-                    label: 'Số lượng nhân viên chấm công',
-                    data: data.numEmployees, // Sử dụng dữ liệu số lượng nhân viên từ server
+                    label: 'Số lần chấm công',
+                    data: data.soLanChamCong, // Sử dụng dữ liệu số lần chấm công từ server
                     backgroundColor: 'rgba(75, 192, 192, 0.2)',
                     borderColor: 'rgba(75, 192, 192, 1)',
                     borderWidth: 1
@@ -161,22 +153,23 @@
                 responsive: true,
                 scales: {
                     y: {
-                        beginAtZero: false,
+                        beginAtZero: true,
                         title: {
                             display: true,
-                            text: 'Số lượng nhân viên'
+                            text: 'Số lần chấm công'
                         }
                     },
                     x: {
                         title: {
                             display: true,
-                            text: 'Ngày'
+                            text: 'Mã nhân viên'
                         }
                     }
                 }
             }
         });
     }
+
 
     function filterWorkTime() {
         var dateFilter = document.getElementById("dateFilter").value;
