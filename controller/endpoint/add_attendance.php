@@ -90,7 +90,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
             // Thời gian bắt đầu và kết thúc thời gian tăng ca (21h10 - 21h15)
             $nightShiftStart = strtotime(date("Y-m-d 18:30:00"));
-            $nightShiftEnd = strtotime(date("Y-m-d 23:10:00"));
+            $nightShiftEnd = strtotime(date("Y-m-d 20:40:00"));
 
             // Trạng thái chấm công
             $attendanceStatus = "";

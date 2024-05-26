@@ -139,14 +139,7 @@
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.min.js"></script>
-    <!-- DataTable JS -->
-    <script src="https://cdn.datatables.net/1.13.7/js/jquery.dataTables.js"></script>
-    <!-- FileSaver.js -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.0/FileSaver.min.js"></script>
-    <!-- xlsx.js -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.3/xlsx.full.min.js"></script>
-    <!-- ExcelJS -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/exceljs/4.1.1/exceljs.min.js"></script>
+
 
     <!-- Script for DataTable initialization -->
     <script>
@@ -187,7 +180,7 @@
 
         XLSX.utils.book_append_sheet(wb, ws, "Employees");
 
-        XLSX.writeFile(wb, "employee_data.xlsx");
+        XLSX.writeFile(wb, "employee_qr_data.xlsx");
     }
 
     document.getElementById("exportExcel").addEventListener("click", exportToExcel);

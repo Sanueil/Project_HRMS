@@ -25,10 +25,9 @@
                         <?php
                                 // Thực hiện truy vấn SQL để lấy danh sách mã nhân viên có tài khoản
                                 $sql = "
-                                    SELECT nv.maNhanVien, nv.hoTenNhanVien, pb.maPhongBan
+                                    SELECT nv.maNhanVien, nv.hoTenNhanVien
                                     FROM nhan_vien nv
                                     JOIN tai_khoan tk ON nv.maNhanVien = tk.maNhanVien
-                                    JOIN nhan_vien_phong_ban pb ON nv.maNhanVien = pb.maNhanVien
                                     WHERE tk.username IS NOT NULL
                                     AND nv.maNhanVien NOT IN (
                                         SELECT maNhanVien FROM luong
