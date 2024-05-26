@@ -106,8 +106,19 @@
 
     <!-- Script -->
     <script>
+    // Khai báo biến toàn cục để lưu trữ biểu đồ
+    var workTimeChart;
+
     // Gọi hàm để lấy dữ liệu và vẽ biểu đồ khi trang được tải
-    getAggregatedWorkTimeDataAndDrawChart();
+    getWorkTimeDataAndDrawChart();
+
+    // Thiết lập ngày mặc định cho bộ lọc
+    setDefaultDateFilter();
+
+    function closeReportModal() {
+        document.getElementById("reportModal").style.display = "none";
+        document.getElementById("overlay").style.display = "none";
+    }
 
     function showLoadingSpinner() {
         document.getElementById("loadingSpinner").style.display = "block";
@@ -117,10 +128,10 @@
         document.getElementById("loadingSpinner").style.display = "none";
     }
 
-    function getAggregatedWorkTimeDataAndDrawChart() {
+    function getWorkTimeDataAndDrawChart() {
         showLoadingSpinner();
         var xhr = new XMLHttpRequest();
-        xhr.open("GET", "../../controller/get_aggregated_work_time_data.php", true);
+        xhr.open("GET", "../../controller/get_work_time_data.php", true);
         xhr.onreadystatechange = function() {
             if (xhr.readyState == 4) {
                 hideLoadingSpinner();
@@ -136,14 +147,19 @@
     }
 
     function drawWorkTimeChart(data) {
+        // Kiểm tra nếu biểu đồ đã tồn tại và hủy nó nếu có
+        if (workTimeChart) {
+            workTimeChart.destroy();
+        }
+
         var ctx = document.getElementById('workTimeChart').getContext('2d');
-        var workTimeChart = new Chart(ctx, {
+        workTimeChart = new Chart(ctx, {
             type: 'bar',
             data: {
-                labels: data.maNhanVien, // Sử dụng dữ liệu mã nhân viên từ server
+                labels: data.employees, // Sử dụng dữ liệu nhân viên từ server
                 datasets: [{
                     label: 'Số lần chấm công',
-                    data: data.soLanChamCong, // Sử dụng dữ liệu số lần chấm công từ server
+                    data: data.numCheckIns, // Sử dụng dữ liệu số lần chấm công từ server
                     backgroundColor: 'rgba(75, 192, 192, 0.2)',
                     borderColor: 'rgba(75, 192, 192, 1)',
                     borderWidth: 1
@@ -157,6 +173,13 @@
                         title: {
                             display: true,
                             text: 'Số lần chấm công'
+                        },
+                        ticks: {
+                            precision: 0, // Ensure integer values
+                            stepSize: 1, // Ensure the steps are in whole numbers
+                            callback: function(value) {
+                                return Number.isInteger(value) ? value : null; // Show only integers
+                            }
                         }
                     },
                     x: {
@@ -169,7 +192,6 @@
             }
         });
     }
-
 
     function filterWorkTime() {
         var dateFilter = document.getElementById("dateFilter").value;
@@ -204,8 +226,8 @@
 
     function exportChart() {
         var canvas = document.getElementById('workTimeChart');
-        var currentDate = new Date().toISOString().slice(0, 10); // Lấy ngày hiện tại, định dạng yyyy-mm-dd
-        var fileName = 'work_time_chart_' + currentDate + '.png'; // Tạo tên file với thời gian
+        var dateFilter = document.getElementById("dateFilter").value; // Get the filtered date
+        var fileName = 'work_time_chart_' + dateFilter + '.png'; // Use the filtered date in the filename
         var url = canvas.toDataURL('image/png');
         var link = document.createElement('a');
         link.href = url;
