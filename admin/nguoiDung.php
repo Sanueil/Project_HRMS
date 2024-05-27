@@ -25,17 +25,30 @@ $offset = ($current_page - 1) * $records_per_page;
 function deleteRecord($id)
 {
     global $db, $url;
-    // Viết truy vấn SQL để xóa bản ghi dựa trên ID
-    $sql = "DELETE FROM nhan_vien WHERE maNhanVien = $id";
+    // Bắt đầu giao dịch
+    $db->begin_transaction();
 
-    // Thực thi truy vấn
-    if ($db->query($sql) === TRUE) {
-        // Hiển thị thông báo xóa thành công bằng hộp thoại JavaScript
-        echo "<script>alert('Xóa nhân viên thành công.');</script>";
-        echo "<script>window.location.href = '$url'dsUsers';</script>";
-    } else {
-        // Hiển thị thông báo lỗi bằng hộp thoại JavaScript
-        echo "<script>alert('Lỗi: " . $db->error . "');</script>";
+    try {
+        // Xóa tài khoản liên quan đến nhân viên
+        $sqlDeleteTaiKhoan = "DELETE FROM tai_khoan WHERE maNhanVien = $id";
+        if ($db->query($sqlDeleteTaiKhoan) !== TRUE) {
+            throw new Exception("Lỗi khi xóa tài khoản: " . $db->error);
+        }
+
+        // Xóa nhân viên
+        $sqlDeleteNhanVien = "DELETE FROM nhan_vien WHERE maNhanVien = $id";
+        if ($db->query($sqlDeleteNhanVien) !== TRUE) {
+            throw new Exception("Lỗi khi xóa nhân viên: " . $db->error);
+        }
+
+        // Hoàn thành giao dịch
+        $db->commit();
+        echo "<script>alert('Xóa nhân viên và tài khoản thành công.');</script>";
+        echo "<script>window.location.href = '" . $url . "dsUsers';</script>";
+    } catch (Exception $e) {
+        // Hoàn tác giao dịch nếu có lỗi
+        $db->rollback();
+        echo "<script>alert('" . $e->getMessage() . "');</script>";
     }
 }
 
