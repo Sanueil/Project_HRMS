@@ -181,6 +181,7 @@ p {
         <div class="content-body">
             <div class="container">
                 <section class="content" id="main-content">
+                    <br>
                     <div id="defaultContent" style="display: none;">
                         <h3>Chào mừng bạn đến với Bảng điều khiển Quản trị viên!</h3>
                         <div class="dashboard">
@@ -200,26 +201,27 @@ p {
                             </div>
                             <div class="left-column">
                                 <!-- Content for the left column goes here -->
-                                <h3>Tổng nhân viên mới</h3>
-                                <p><?php ?> </p>
-
-                                <?php
-                                // $sql1="
-                                
-                                // ";
-                                // $result1 = $p->query($sql1);
-                                // $row1 = $result1->fetch_assoc();
-                                // echo $row_new_employees['new_employees'];
-                                
-
-                                ?>nhân viên mới gia nhập
-
+                                <h3>Tổng số phòng ban</h3>
+                                <h1><?php 
+                                // Get the total number of departments
+                                $sql1 = "SELECT COUNT(*) AS total_departments FROM phong_ban";
+                                $result1 = $p->query($sql1);
+                                $row1 = $result1->fetch_assoc();
+                                $total_departments = $row1['total_departments'];
+                                echo $total_departments;
+                                ?> </h1>
                             </div>
-                            <div class="right-section">
-                                <!-- Content for the first right section goes here -->
-                                <h3>Tổng nhân viên nghỉ việc</h3>
-                                <!-- <p><?php echo $row_departed_employees['departed_employees']; ?> nhân viên đã nghỉ việc
-                                </p> -->
+                            <div class="left-column">
+                                <!-- Content for the left column goes here -->
+                                <h3>Tổng số tài khoản</h3>
+                                <h1><?php 
+                                // Get the total number of departments
+                                $sql2 = "SELECT COUNT(*) AS total_accounts FROM tai_khoan";
+                                $result2 = $p->query($sql2);
+                                $row2 = $result2->fetch_assoc();
+                                $total_accounts = $row2['total_accounts'];
+                                echo $total_accounts;
+                                ?> </h1>
                             </div>
                         </div>
                     </div>

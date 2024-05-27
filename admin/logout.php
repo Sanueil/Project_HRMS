@@ -2,11 +2,10 @@
 // Bắt đầu phiên làm việc
 session_start();
 
-// Xóa tất cả các biến phiên
-$_SESSION = array();
-
-// Hủy phiên làm việc
-session_destroy();
+// Kiểm tra và xóa session của quản lý nếu tồn tại
+if (isset($_SESSION['admin_user'])) {
+    unset($_SESSION['admin_user']);
+}
 
 // Đảm bảo rằng trang không được cache bởi trình duyệt
 header("Cache-Control: no-cache, no-store, must-revalidate");
