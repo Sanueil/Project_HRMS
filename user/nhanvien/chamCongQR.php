@@ -262,7 +262,7 @@
 
         // Kiểm tra xem có đến thời gian mở camera không
         if ((currentHour >= 8 && currentHour < 17) || (currentHour === 17 && currentMinute <= 10) || (
-                currentHour >= 18 && currentHour < 23) || (currentHour === 23 && currentMinute <= 10)) {
+                currentHour >= 18 && currentHour < 20) || (currentHour === 20 && currentMinute <= 40)) {
             // Nếu trong khoảng thời gian cho phép mở camera, hiển thị camera và bắt đầu quét mã QR
             startScanner();
         } else {
