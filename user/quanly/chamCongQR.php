@@ -37,6 +37,7 @@
         height: 90%;
         width: 100%;
         border-radius: 20px;
+        margin-top: 50px;
         padding: 40px;
         background-color: rgba(255, 255, 255, 0.8);
     }

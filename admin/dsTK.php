@@ -124,7 +124,7 @@ if (isset($_GET['username'])) {
                             // Thêm một thẻ <span> để chứa mật khẩu và gắn id để dễ dàng thay đổi nội dung
                             echo "<td class='password-cell' onclick=\"showPassword('" . $account['username'] . "')\"><span id='password_" . $account['username'] . "'>*******</span><span id='actual_password_" . $account['username'] . "' style='display:none'>" . $account['password'] . "</span></td>";
                             echo "<td>" . $account['vai_tro'] . "</td>";
-                            echo "<td><button type='button' data-toggle='modal' data-target='#changePasswordModal' class='btn btn-primary btn-sm'>Sửa</button>
+                            echo "<td><button type='button' data-toggle='modal' data-target='#changePasswordModal' onclick='openPasswordModal(\"" . $account['username'] . "\")' class='btn btn-primary btn-sm'>Sửa</button>
                             <button type='button' onclick=\"confirmDelete(" . $account['username'] . ")\" class='btn btn-danger btn-sm'>Xóa</button>
                             </td>
                         </tr>";
@@ -197,11 +197,11 @@ if (isset($_GET['username'])) {
         });
     });
 
-    function openPasswordModal(id) {
+    function openPasswordModal(username) {
         document.getElementById("changePasswordModal").style.display = "block";
-        document.getElementById("overlay").style.display = "block";
-        document.getElementById("username").value = id;
+        document.getElementById("username").value = username;
     }
+
 
     function showPassword(id) {
         var passwordSpan = document.querySelector("#password_" + id);
