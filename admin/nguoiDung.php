@@ -294,7 +294,7 @@ if (isset($_GET['maNhanVien'])) {
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title">Chi Tiết Người Dùng</h5>
-                    <button type="button" class="close" onclick="closeUserInfoModal()">
+                    <button type="button" class="close" onclick="closeUserInfoModal()" ID="closeUserInfoModal">
                         <span>&times;</span>
                     </button>
                 </div>

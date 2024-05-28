@@ -16,7 +16,7 @@ $_SESSION['current_url'] = $_SERVER['REQUEST_URI'];
 $table = isset($_SESSION['admin_user']['table']);
 
 // Tạo URL đầy đủ với username được truyền vào
-$url = "home.php??user=admin&table=" . urlencode($table);
+$url = "home.php?user=admin&table=" . urlencode($table);
 ?>
 <!DOCTYPE html>
 <html lang="en">
